@@ -94,13 +94,13 @@ export default function VisitorFormPage() {
     }
   };
 
-  // Branding component with Zordial styling
+  // Branding component with curated theme styling
   const Branding = () => {
     if (!state.org) {
       return (
         <div className="text-center mb-6">
-          <div className="h-10 w-32 bg-gray-200 animate-pulse rounded mx-auto mb-2"></div>
-          <div className="h-6 w-48 bg-gray-200 animate-pulse rounded mx-auto"></div>
+          <div className="h-12 w-36 bg-slate-200 animate-pulse rounded-xl mx-auto mb-2"></div>
+          <div className="h-6 w-48 bg-slate-200 animate-pulse rounded-lg mx-auto"></div>
         </div>
       );
     }
@@ -125,20 +125,20 @@ export default function VisitorFormPage() {
           <img
             src={state.org.logo_url}
             alt={state.org.name}
-            className="h-16 mx-auto mb-3 object-contain"
+            className="h-16 mx-auto mb-3 object-contain rounded-lg"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
           />
         )}
-        <h1 className="text-2xl font-bold" style={{ color: '#06216B' }}>
+        <h1 className="text-2xl sm:text-3xl font-black text-[#172525] tracking-tight">
           {state.org.name}
         </h1>
-        <p className="text-sm mt-1" style={{ color: '#3F5885', fontWeight: 600 }}>
+        <p className="text-xs sm:text-sm font-bold text-[#035352] mt-1">
           {subtitle}
         </p>
         {showWelcomeBack && (
-          <span className="inline-block mt-2 px-4 py-1 bg-green-100 text-green-700 text-xs rounded-full font-semibold">
+          <span className="inline-block mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-bold border border-emerald-300">
             Welcome Back!
           </span>
         )}
@@ -146,12 +146,11 @@ export default function VisitorFormPage() {
     );
   };
 
-  // RENDER - With Zordial UI styling
+  // RENDER - With curated UI styling
   return (
     <div
-      className="min-h-screen py-8 px-4"
+      className="min-h-screen py-8 px-4 bg-[#F4F7F6]"
       style={{
-        backgroundColor: '#ffffff',
         backgroundImage: 'url(/src/assets/visitor_bg.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
@@ -165,11 +164,11 @@ export default function VisitorFormPage() {
 
         {state.msg && (
           <div
-            className={`mb-4 p-3 rounded-lg text-sm font-medium ${state.msg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-              }`}
-            style={{
-              border: state.msg.type === 'success' ? '1px solid #86efac' : '1px solid #fca5a5'
-            }}
+            className={`mb-4 p-3 rounded-xl text-sm font-bold shadow-sm ${
+              state.msg.type === 'success' 
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+                : 'bg-rose-50 text-rose-800 border border-rose-200'
+            }`}
           >
             {state.msg.text}
           </div>
@@ -183,29 +182,17 @@ export default function VisitorFormPage() {
             {state.step === 'mobile' && <MobileStep />}
             {state.step === 'otp' && <OtpStep />}
             {state.step === 'form' && (
-              <div
-                className="rounded-2xl overflow-hidden"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.96)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid #021767',
-                  boxShadow: '0 20px 60px rgba(2, 29, 91, 0.25)'
-                }}
-              >
-                <div className="flex border-b" style={{ borderColor: '#021767' }}>
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xl shadow-[#035352]/10 overflow-hidden">
+                <div className="flex border-b border-slate-200">
                   {['Personal', 'Visit', 'Selfie'].map((name, i) => (
                     <button
                       key={i}
                       onClick={() => dispatch(actions.setTab(i))}
-                      className={`flex-1 py-4 text-sm font-semibold transition-all ${state.tab === i
-                          ? 'border-b-2 text-blue-600'
-                          : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                      style={{
-                        borderColor: state.tab === i ? '#153D9F' : 'transparent',
-                        color: state.tab === i ? '#153D9F' : '#64748b',
-                        fontWeight: state.tab === i ? 800 : 600
-                      }}
+                      className={`flex-1 py-4 text-xs sm:text-sm font-bold transition-all ${
+                        state.tab === i
+                          ? 'bg-[#035352] text-[#F3E8BC] border-b-2 border-[#035352]'
+                          : 'text-slate-500 hover:text-[#035352] hover:bg-slate-50'
+                      }`}
                     >
                       {i + 1}. {name}
                     </button>
@@ -216,16 +203,11 @@ export default function VisitorFormPage() {
                   {state.tab === 1 && <VisitTab />}
                   {state.tab === 2 && <SelfieTab />}
 
-                  <div className="flex gap-3 mt-6 pt-6" style={{ borderTop: '1px solid #e2e8f0' }}>
+                  <div className="flex gap-3 mt-6 pt-6 border-t border-slate-100">
                     {state.tab > 0 && (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab - 1))}
-                        className="flex-1 py-3 rounded-xl font-bold transition-all"
-                        style={{
-                          border: '1px solid #021767',
-                          color: '#3F5885',
-                          background: 'transparent'
-                        }}
+                        className="flex-1 py-3 rounded-xl font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-sm"
                       >
                         Back
                       </button>
@@ -233,18 +215,7 @@ export default function VisitorFormPage() {
                     {state.tab < 2 ? (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab + 1))}
-                        className="flex-1 py-3 rounded-xl font-bold text-white transition-all"
-                        style={{
-                          background: 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)',
-                          boxShadow: '0 6px 18px rgba(2, 29, 91, 0.2)',
-                          border: '1px solid #021767'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #06216B 0%, #021D5B 100%)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)';
-                        }}
+                        className="flex-1 py-3 rounded-xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-sm"
                       >
                         Next →
                       </button>
@@ -253,22 +224,7 @@ export default function VisitorFormPage() {
                         <button
                           onClick={handleSubmit}
                           disabled={state.loading}
-                          className="flex-1 py-3 rounded-xl font-bold text-white transition-all disabled:opacity-50"
-                          style={{
-                            background: 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)',
-                            boxShadow: '0 6px 18px rgba(2, 29, 91, 0.2)',
-                            border: '1px solid #021767'
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!state.loading) {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #06216B 0%, #021D5B 100%)';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!state.loading) {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)';
-                            }
-                          }}
+                          className="flex-1 py-3 rounded-xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-sm disabled:opacity-50"
                         >
                           {state.loading ? 'Submitting...' : 'Complete Registration'}
                         </button>
