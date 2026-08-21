@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
+import ScannerLandingPage from './pages/ScannerLandingPage';
 import VisitorFormPage from './pages/VisitorFormPage';
 
 function App() {
@@ -8,10 +9,10 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<div className="min-h-screen flex items-center justify-center">
-            <h1 className="text-4xl font-bold">Digi-Gate</h1>
-          </div>} />
+          <Route path="/" element={<ScannerLandingPage />} />
           <Route path="/visitor/form/:orgId" element={<VisitorFormPage />} />
+          <Route path="/org/:orgId" element={<VisitorFormPage />} />
+          <Route path="/form/:orgId" element={<VisitorFormPage />} />
         </Routes>
       </BrowserRouter>
     </Provider>

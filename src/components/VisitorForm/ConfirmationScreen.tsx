@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Clock, User, Building, Target, RefreshCw } from 'lucide-react';
 
 export default function ConfirmationScreen() {
   const dispatch = useDispatch();
@@ -14,130 +14,106 @@ export default function ConfirmationScreen() {
 
   const handleRegisterAnother = () => {
     dispatch(actions.reset());
-    navigate('/visitor/form/1');
+    navigate('/');
   };
 
   return (
-    <div 
-      className="rounded-2xl p-8 text-center"
-      style={{
-        background: 'rgba(255, 255, 255, 0.96)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid #021767',
-        boxShadow: '0 20px 60px rgba(2, 29, 91, 0.25)'
-      }}
-    >
-      {/* Status Icon */}
-      <div className="flex justify-center mb-4">
-        <div 
-          className="w-20 h-20 rounded-full flex items-center justify-center"
-          style={{
-            backgroundColor: isAvailable ? '#dcfce7' : '#fef3c7'
-          }}
-        >
+    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-2xl shadow-[#035352]/10 text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+      {/* Status Header Badge */}
+      <div className="flex flex-col items-center justify-center space-y-3">
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg ${
+          isAvailable ? 'bg-emerald-100 text-emerald-700 shadow-emerald-200' : 'bg-amber-100 text-amber-800 shadow-amber-200'
+        }`}>
           {isAvailable ? (
-            <CheckCircle size={40} style={{ color: '#15803d' }} />
+            <CheckCircle2 className="w-10 h-10 stroke-[2.2]" />
           ) : (
-            <XCircle size={40} style={{ color: '#c2410c' }} />
+            <AlertTriangle className="w-10 h-10 stroke-[2.2]" />
+          )}
+        </div>
+
+        <div>
+          {isAvailable ? (
+            <>
+              <h2 className="text-xl font-black text-emerald-800">
+                Check-In Registered!
+              </h2>
+              <p className="text-xs font-bold text-slate-700 mt-1">
+                {state.confirmData?.host_name || 'Host'} has been notified of your arrival.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-black text-amber-800">
+                Notice: Host Unavailable
+              </h2>
+              <p className="text-xs font-bold text-slate-700 mt-1">
+                {state.confirmData?.host_name || 'Host'} is currently not available.
+              </p>
+            </>
           )}
         </div>
       </div>
 
-      {/* Title */}
-      {isAvailable ? (
-        <>
-          <h2 className="text-2xl font-bold" style={{ color: '#15803d' }}>
-            Thank you for visiting!
-          </h2>
-          <p className="text-lg font-semibold mt-1" style={{ color: '#334155' }}>
-            {state.confirmData?.host_name || 'Host'} will be with you shortly.
-          </p>
-        </>
-      ) : (
-        <>
-          <h2 className="text-2xl font-bold" style={{ color: '#c2410c' }}>
-            Thank you for your interest.
-          </h2>
-          <p className="text-lg font-semibold mt-1" style={{ color: '#475569' }}>
-            {state.confirmData?.host_name || 'Host'} is currently unavailable.
-          </p>
-        </>
-      )}
-
-      {/* Unavailable Message */}
+      {/* Unavailable Info Box */}
       {!isAvailable && (
-        <div 
-          className="mt-4 p-4 rounded-xl text-left"
-          style={{
-            backgroundColor: '#fef3c7',
-            border: '1px solid #fcd34d',
-            color: '#92400e'
-          }}
-        >
-          <p className="text-sm font-medium">
-            {state.confirmData?.unavailable_message || 'Kindly visit again during scheduled hours.'}
-          </p>
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold text-left shadow-sm">
+          <p>{state.confirmData?.unavailable_message || 'Thank you for visiting! Host is currently unavailable. Kindly visit again during available hours.'}</p>
         </div>
       )}
 
-      {/* Visit Details Card */}
-      <div 
-        className="mt-6 p-4 rounded-xl"
-        style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #021767'
-        }}
-      >
-        <div className="flex justify-between items-center">
-          <div className="text-left">
-            <p className="text-xs font-semibold" style={{ color: '#3F5885' }}>
-              Check-in Time
-            </p>
-            <p className="text-sm font-bold mt-0.5" style={{ color: '#3F5885' }}>
-              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </p>
+      {/* Gate Pass Ticket Card */}
+      <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 sm:p-5 text-left space-y-3 shadow-inner">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <span className="text-[11px] font-extrabold text-[#035352] uppercase tracking-wider">
+            Visitor Gate Entry Pass
+          </span>
+          <span className="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">
+            {isAvailable ? 'PASSED' : 'NOTIFIED'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Visitor Name</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+              <User className="w-3.5 h-3.5 text-[#035352]" />
+              <span className="truncate">{state.form.full_name || 'N/A'}</span>
+            </span>
           </div>
-          <div className="text-right">
-            <p className="text-xs font-semibold" style={{ color: '#3F5885' }}>
-              Host Selected
-            </p>
-            <p className="text-sm font-bold mt-0.5" style={{ color: '#3F5885' }}>
-              {state.confirmData?.host_name || 'N/A'}
-            </p>
+
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Check-In Time</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+              <Clock className="w-3.5 h-3.5 text-[#035352]" />
+              <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </span>
+          </div>
+
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Company</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+              <Building className="w-3.5 h-3.5 text-[#035352]" />
+              <span className="truncate">{state.form.company || 'N/A'}</span>
+            </span>
+          </div>
+
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Host Staff</span>
+            <span className="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+              <Target className="w-3.5 h-3.5 text-[#035352]" />
+              <span className="truncate">{state.confirmData?.host_name || 'N/A'}</span>
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Visitor Details */}
-      <div className="mt-4 text-left space-y-1.5 p-3 rounded-lg" style={{ backgroundColor: '#f8fafc' }}>
-        <p className="text-xs" style={{ color: '#64748b' }}>
-          <span className="font-semibold" style={{ color: '#3F5885' }}>Visitor:</span> {state.form.full_name || 'N/A'}
-        </p>
-        <p className="text-xs" style={{ color: '#64748b' }}>
-          <span className="font-semibold" style={{ color: '#3F5885' }}>Company:</span> {state.form.company || 'N/A'}
-        </p>
-        <p className="text-xs" style={{ color: '#64748b' }}>
-          <span className="font-semibold" style={{ color: '#3F5885' }}>Purpose:</span> {state.form.purpose_of_visit || 'N/A'}
-        </p>
-      </div>
-
-      {/* Register Another Button */}
+      {/* Action Button */}
       <button
         onClick={handleRegisterAnother}
-        className="w-full mt-6 py-3 rounded-xl font-bold text-white transition-all"
-        style={{
-          background: 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)',
-          boxShadow: '0 6px 18px rgba(2, 29, 91, 0.2)',
-          border: '1px solid #021767'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #06216B 0%, #021D5B 100%)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)';
-        }}
+        className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
       >
-        Check-In Another Visitor
+        <RefreshCw className="w-4 h-4" />
+        <span>Return to Kiosk / Check-In Another Visitor</span>
       </button>
     </div>
   );

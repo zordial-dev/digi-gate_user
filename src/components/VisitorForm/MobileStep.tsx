@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
 import { visitorApi } from '@/api/services';
+import { Phone, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function MobileStep() {
   const dispatch = useDispatch();
@@ -11,7 +12,7 @@ export default function MobileStep() {
 
   const handleSubmit = async () => {
     if (!state.mobile || state.mobile.length !== 10) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Enter valid 10-digit number' }));
+      dispatch(actions.setMsg({ type: 'error', text: 'Please enter a valid 10-digit mobile number' }));
       return;
     }
     setLoading(true);
@@ -36,38 +37,31 @@ export default function MobileStep() {
         dispatch(actions.setIsReturning(false));
         dispatch(actions.setVisitorId(null));
         dispatch(actions.setForm({ mobile_number: state.mobile }));
-        dispatch(actions.setMsg({ type: 'success', text: 'Verify your OTP' }));
+        dispatch(actions.setMsg({ type: 'success', text: 'Enter verification OTP code sent to your mobile' }));
       }
       dispatch(actions.setStep('otp'));
     } catch {
-      dispatch(actions.setMsg({ type: 'error', text: 'Network error' }));
+      dispatch(actions.setMsg({ type: 'error', text: 'Network connection error' }));
     }
     setLoading(false);
   };
 
   return (
-    <div 
-      className="rounded-2xl p-8"
-      style={{
-        background: 'rgba(255, 255, 255, 0.96)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid #021767',
-        boxShadow: '0 20px 60px rgba(2, 29, 91, 0.25)'
-      }}
-    >
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-2" style={{ color: '#3F5885' }}>
+    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-2xl shadow-[#035352]/10 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+      <div className="text-center space-y-1">
+        <div className="w-12 h-12 rounded-2xl bg-[#035352]/10 text-[#035352] flex items-center justify-center mx-auto mb-2">
+          <Phone className="w-6 h-6" />
+        </div>
+        <h2 className="text-lg font-bold text-[#172525]">Mobile Verification</h2>
+        <p className="text-xs text-slate-500 font-medium">Quick OTP verification to verify your visitor profile</p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5">
           Mobile Number *
         </label>
         <div className="flex items-center">
-          <span 
-            className="px-3 py-3 border rounded-l-lg border-r-0 font-bold"
-            style={{
-              borderColor: '#021767',
-              color: '#1e293b',
-              background: '#f8fafc'
-            }}
-          >
+          <span className="px-3.5 py-3 border border-r-0 border-slate-300 rounded-l-2xl font-bold text-xs bg-slate-50 text-slate-700">
             +91
           </span>
           <input
@@ -75,52 +69,31 @@ export default function MobileStep() {
             value={state.mobile}
             onChange={(e) => dispatch(actions.setMobile(e.target.value.replace(/\D/g, '')))}
             maxLength={10}
-            placeholder="Enter 10-digit number"
-            className="w-full px-4 py-3 border rounded-r-lg outline-none transition-all"
-            style={{
-              borderColor: '#021767',
-              color: '#3F5885',
-              fontWeight: 500,
-              fontSize: '0.95rem'
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#289CD8';
-              e.target.style.boxShadow = '0 0 0 3px rgba(40, 156, 216, 0.2)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#021767';
-              e.target.style.boxShadow = 'none';
-            }}
+            placeholder="Enter 10-digit mobile number"
+            className="w-full px-4 py-3 border border-slate-300 rounded-r-2xl outline-none text-xs font-bold text-slate-800 placeholder-slate-400 focus:border-[#035352] focus:ring-2 focus:ring-[#035352]/20 transition-all shadow-sm"
           />
         </div>
-        <div className="mt-1 text-xs" style={{ color: '#64748b' }}>
-          {state.mobile.length}/10 digits entered
+        <div className="mt-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-400">
+          <span>Standard 10-digit mobile number</span>
+          <span className={state.mobile.length === 10 ? 'text-[#035352] font-bold' : ''}>
+            {state.mobile.length}/10 digits
+          </span>
         </div>
       </div>
 
       <button 
         onClick={handleSubmit} 
         disabled={loading || state.mobile.length !== 10}
-        className="w-full py-3 rounded-xl font-bold text-white transition-all disabled:opacity-50"
-        style={{
-          background: 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)',
-          boxShadow: '0 6px 18px rgba(2, 29, 91, 0.2)',
-          border: '1px solid #021767',
-          fontSize: '1rem'
-        }}
-        onMouseEnter={(e) => {
-          if (!loading && state.mobile.length === 10) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #06216B 0%, #021D5B 100%)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!loading) {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #153D9F 0%, #06216B 100%)';
-          }
-        }}
+        className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider"
       >
-        {loading ? 'Checking...' : 'Send Verification OTP'}
+        <span>{loading ? 'Sending Verification Code...' : 'Send Verification OTP'}</span>
+        <ArrowRight className="w-4 h-4" />
       </button>
+
+      <div className="pt-2 text-center text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
+        <ShieldCheck className="w-4 h-4 text-[#035352]" />
+        <span>Secure OTP verification for visitor security</span>
+      </div>
     </div>
   );
 }
