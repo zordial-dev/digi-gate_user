@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5Qrcode } from 'html5-qrcode';
-import { QrCode, Camera, Upload, Building2, ArrowRight, Sparkles, AlertCircle, RefreshCw, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { QrCode, Camera, Upload, Building2, ArrowRight, AlertCircle, RefreshCw, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function ScannerLandingPage() {
   const navigate = useNavigate();

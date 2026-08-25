@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
 import { organisationApi } from '@/api/services';
-import { Users, Target, FileText, ChevronDown, UserCheck } from 'lucide-react';
+import { Target, FileText, ChevronDown, UserCheck } from 'lucide-react';
 
 interface Host {
   id: number;
