@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
@@ -8,32 +8,62 @@ import ConfirmationScreen from '@/components/VisitorForm/ConfirmationScreen';
 import PersonalTab from '@/components/VisitorForm/PersonalTab';
 import VisitTab from '@/components/VisitorForm/VisitTab';
 import SelfieTab from '@/components/VisitorForm/SelfieTab';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { selfieStore } from '@/utils/selfieStore';
 import { visitorApi, visitApi, organisationApi } from '@/api/services';
-import { CheckCircle2, User, Camera, Target, ArrowLeft, ArrowRight, Building2 } from 'lucide-react';
+import { CheckCircle2, User, Camera, Target, ArrowLeft, ArrowRight, Building2, AlertCircle, QrCode } from 'lucide-react';
 
 export default function VisitorFormPage() {
   const { orgId } = useParams();
+  const navigate = useNavigate();
   const state = useSelector((state: RootState) => state.visitor);
   const dispatch = useDispatch();
 
-  // Fetch organisation details when page loads
+  const [loadingOrg, setLoadingOrg] = useState(true);
+  const [orgError, setOrgError] = useState<string | null>(null);
+
+  // Fetch & validate organisation details when page loads
   useEffect(() => {
     const fetchOrg = async () => {
+      if (!orgId || orgId.trim() === '') {
+        setOrgError('No organisation code or ID provided');
+        setLoadingOrg(false);
+        return;
+      }
+
+      setLoadingOrg(true);
+      setOrgError(null);
+
       try {
-        const response = await organisationApi.getById(parseInt(orgId!));
-        if (response.data.success) {
-          dispatch(actions.setOrg(response.data.data));
+        const response = await organisationApi.getById(orgId.trim());
+        const result = response.data;
+
+        if (result && result.success && result.data && result.data.id) {
+          dispatch(actions.setOrg(result.data));
+          setOrgError(null);
+        } else {
+          dispatch(actions.setOrg(null));
+          setOrgError(result?.error || `Organisation "${orgId}" not found or inactive.`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch organisation:', error);
+        dispatch(actions.setOrg(null));
+        const errMsg = error.response?.data?.error || `Invalid Organisation: Could not verify "${orgId}".`;
+        setOrgError(errMsg);
+      } finally {
+        setLoadingOrg(false);
       }
     };
-    if (orgId) fetchOrg();
+
+    fetchOrg();
   }, [orgId, dispatch]);
 
   const handleSubmit = async () => {
+    if (!state.org) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Invalid organisation. Cannot submit registration.' }));
+      return;
+    }
+
     // 1. Validate Selfie
     const selfieFile = selfieStore.file;
     if (!selfieFile) {
@@ -66,8 +96,10 @@ export default function VisitorFormPage() {
     dispatch(actions.setMsg(null));
 
     try {
+      const activeOrgId = state.org.id;
+
       const formData = new FormData();
-      formData.append('organisation_id', orgId!);
+      formData.append('organisation_id', activeOrgId.toString());
       formData.append('host_id', state.hostId);
       formData.append('purpose_of_visit', state.form.purpose_of_visit.trim());
       formData.append('reference', state.form.reference || '');
@@ -76,7 +108,7 @@ export default function VisitorFormPage() {
 
       if (!state.visitorId) {
         const visitorResponse = await visitorApi.create({
-          organisation_id: parseInt(orgId!),
+          organisation_id: activeOrgId,
           full_name: state.form.full_name,
           designation: state.form.designation,
           company: state.form.company,
@@ -117,17 +149,79 @@ export default function VisitorFormPage() {
     }
   };
 
-  // Branding Component with Theme tokens
-  const Branding = () => {
-    if (!state.org) {
-      return (
-        <div className="text-center mb-6">
-          <div className="h-12 w-36 bg-slate-200 animate-pulse rounded-2xl mx-auto mb-2" />
-          <div className="h-4 w-48 bg-slate-200 animate-pulse rounded-lg mx-auto" />
+  // 1. Loading State Screen
+  if (loadingOrg) {
+    return (
+      <div className="min-h-screen py-12 px-4 bg-[#F4F7F6] flex flex-col items-center justify-center">
+        <div className="bg-white p-8 rounded-3xl border border-slate-200/90 shadow-2xl text-center space-y-4 max-w-md w-full animate-in fade-in duration-200">
+          <div className="w-14 h-14 rounded-2xl bg-[#035352]/10 text-[#035352] flex items-center justify-center mx-auto animate-pulse">
+            <Building2 className="w-7 h-7" />
+          </div>
+          <h2 className="text-lg font-bold text-[#172525]">Verifying Organisation...</h2>
+          <p className="text-xs text-slate-500 font-medium">Checking organisation details with Digi-Gate server</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
+  // 2. Invalid Organisation Screen (Shown BEFORE requesting Mobile Number for OTP)
+  if (orgError || !state.org) {
+    return (
+      <div className="min-h-screen py-12 px-4 bg-[#F4F7F6] flex flex-col items-center justify-center selection:bg-rose-600 selection:text-white">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-rose-200/90 shadow-2xl p-6 sm:p-8 text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner border border-rose-200">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="inline-block px-3 py-1 bg-rose-100 text-rose-800 text-[11px] font-extrabold uppercase tracking-wider rounded-full border border-rose-300">
+              Invalid Organisation
+            </span>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
+              Organisation Not Found
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+              The organisation code or name <span className="font-bold text-slate-900 underline decoration-rose-400 decoration-2">"{orgId}"</span> is invalid, inactive, or not registered in Digi-Gate.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs text-slate-600 space-y-1.5">
+            <p className="font-bold text-slate-700">What should I do?</p>
+            <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-500">
+              <li>Check for spelling errors in the organisation name or code.</li>
+              <li>Scan the official gate QR code provided at the reception desk.</li>
+              <li>Contact security or your host for the valid organisation ID.</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-2.5 pt-2">
+            <button
+              onClick={() => navigate('/scan')}
+              className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
+            >
+              <QrCode className="w-4 h-4" />
+              <span>Scan Gate QR Code</span>
+            </button>
+            
+            <button
+              onClick={() => navigate('/')}
+              className="w-full py-3 rounded-2xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Return to Digi-Gate Home</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center text-[11px] font-semibold text-slate-400">
+          Powered by DIGI-GATE Gate Pass System
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Branding Header Component
+  const Branding = () => {
     let subtitle = '';
     let showWelcomeBack = false;
 
@@ -178,6 +272,7 @@ export default function VisitorFormPage() {
     );
   };
 
+  // 4. Main Visitor Check-In Form Screen
   return (
     <div className="min-h-screen py-6 px-4 bg-[#F4F7F6] flex flex-col justify-between selection:bg-[#035352] selection:text-white">
       <div className="max-w-lg mx-auto w-full space-y-5">
@@ -218,7 +313,7 @@ export default function VisitorFormPage() {
                       <button
                         key={i}
                         onClick={() => dispatch(actions.setTab(i))}
-                        className={`flex-1 py-3 px-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
+                        className={`flex-1 py-3 px-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                           state.tab === i
                             ? 'bg-[#035352] text-[#F3E8BC] shadow-md shadow-[#035352]/20'
                             : 'text-slate-500 hover:text-[#035352]'
@@ -242,7 +337,7 @@ export default function VisitorFormPage() {
                     {state.tab > 0 && (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab - 1))}
-                        className="flex-1 py-3 rounded-2xl font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm"
+                        className="flex-1 py-3 rounded-2xl font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                       >
                         <ArrowLeft className="w-4 h-4" />
                         <span>Back</span>
@@ -252,7 +347,7 @@ export default function VisitorFormPage() {
                     {state.tab < 2 ? (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab + 1))}
-                        className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-1.5 uppercase tracking-wider"
+                        className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
                       >
                         <span>Next Step</span>
                         <ArrowRight className="w-4 h-4" />
@@ -262,7 +357,7 @@ export default function VisitorFormPage() {
                         <button
                           onClick={handleSubmit}
                           disabled={state.loading}
-                          className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs disabled:opacity-50 uppercase tracking-wider flex items-center justify-center gap-2"
+                          className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs disabled:opacity-50 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                         >
                           {state.loading ? 'Submitting Registration...' : 'Complete Check-In Pass'}
                         </button>

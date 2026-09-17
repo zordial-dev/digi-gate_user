@@ -23,10 +23,15 @@ export default function VisitTab() {
   const [hosts, setHosts] = useState<Host[]>([]);
 
   useEffect(() => {
-    organisationApi.getById(parseInt(orgId!)).then((res) => {
-      if (res.data.success) setHosts(res.data.data.people || []);
-    });
-  }, [orgId]);
+    const activeOrgId = state.org?.id || orgId;
+    if (activeOrgId) {
+      organisationApi.getById(activeOrgId).then((res) => {
+        if (res.data.success && res.data.data) {
+          setHosts(res.data.data.people || []);
+        }
+      });
+    }
+  }, [orgId, state.org]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     dispatch(actions.setForm({ [e.target.name]: e.target.value }));

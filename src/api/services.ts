@@ -2,8 +2,8 @@ import apiClient from './client';
 import type { Organisation, Visitor, VisitorFormData, VisitorVisit } from '@/types';
 
 export const organisationApi = {
-  getById: (id: number) =>
-    apiClient.get<{ success: boolean; data: Organisation }>(`/organisations/${id}`),
+  getById: (id: number | string) =>
+    apiClient.get<{ success: boolean; data: Organisation | null; error?: string }>(`/organisations/${id}`),
 };
 
 export const visitorApi = {

@@ -17,7 +17,8 @@ export default function MobileStep() {
     }
     setLoading(true);
     try {
-      const res = await visitorApi.check(state.mobile, 1);
+      const orgIdToUse = state.org?.id || 1;
+      const res = await visitorApi.check(state.mobile, orgIdToUse);
       const result = res.data;
 
       if (result.success && result.isReturning && result.data) {
