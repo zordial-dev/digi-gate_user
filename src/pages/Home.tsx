@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import RegisterOrgModal from "@/components/RegisterOrgModal";
 
 type IconComponent = LucideIcon;
 
@@ -177,8 +178,10 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const openDemo = () => { setMobileMenuOpen(false); setDemoOpen(true); };
+  const openRegister = () => { setMobileMenuOpen(false); setRegisterOpen(true); };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 18);
@@ -196,6 +199,9 @@ export default function Home() {
             {navItems.map(([label, href, testId]) => <a key={href} href={href} className="text-sm font-semibold text-[#3F5885] hover:text-[#06216B] transition-colors" data-testid={testId}>{label}</a>)}
           </nav>
           <div className="hidden items-center gap-3 lg:flex">
+            <Button onClick={() => setRegisterOpen(true)} className="rounded-xl border border-[#DCE6F7] bg-white px-4 font-bold text-[#06216B] hover:bg-[#F1F6FD] shadow-sm flex items-center gap-2" data-testid="nav-cta-register">
+              <Building2 className="size-4 text-[#153D9F]" /> Register
+            </Button>
             <Button onClick={() => navigate("/scan")} className="rounded-xl border border-[#DCE6F7] bg-white px-4 font-bold text-[#06216B] hover:bg-[#F1F6FD] shadow-sm flex items-center gap-2" data-testid="nav-cta-scan-qr">
               <QrCode className="size-4 text-[#153D9F]" /> Scan QR
             </Button>
@@ -214,6 +220,9 @@ export default function Home() {
                 {navItems.map(([label, href, testId]) => <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold text-[#3F5885] hover:bg-[#F1F5FB] hover:text-[#06216B]" data-testid={`${testId}-mobile`}>{label}</a>)}
               </div>
               <div className="mt-4 flex flex-col gap-3 border-t border-[#DCE6F7] pt-4">
+                <Button onClick={openRegister} className="w-full rounded-xl border border-[#DCE6F7] bg-white font-bold text-[#06216B] flex items-center justify-center gap-2" data-testid="nav-cta-register-mobile">
+                  <Building2 className="size-4 text-[#153D9F]" /> Register Organisation
+                </Button>
                 <Button onClick={() => { setMobileMenuOpen(false); navigate("/scan"); }} className="w-full rounded-xl border border-[#DCE6F7] bg-white font-bold text-[#06216B] flex items-center justify-center gap-2" data-testid="nav-cta-scan-qr-mobile">
                   <QrCode className="size-4 text-[#153D9F]" /> Scan Gate QR
                 </Button>
@@ -241,9 +250,9 @@ export default function Home() {
                 <Button onClick={() => navigate("/scan")} size="lg" className="h-14 rounded-xl bg-gradient-to-r from-[#06216B] via-[#153D9F] to-[#021767] px-7 text-base font-bold shadow-xl shadow-[#06216B]/20 hover:-translate-y-1 flex items-center justify-center gap-2" data-testid="hero-cta-scan-gate">
                   <QrCode className="size-5 text-[#8EE7FF]" /> Scan Gate QR
                 </Button>
-                <a href="#product-preview" className="inline-flex h-14 items-center justify-center gap-2 rounded-xl border border-[#C9D8EF] bg-white px-7 text-base font-bold text-[#06216B] shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-[#8EB9FF] hover:shadow-lg hover:shadow-[#06216B]/10" data-testid="hero-cta-explore-product">
-                  Explore Digi-Gate<ArrowDownRight className="size-4" />
-                </a>
+                <Button onClick={() => setRegisterOpen(true)} className="inline-flex h-14 items-center justify-center gap-2 rounded-xl border border-[#C9D8EF] bg-white px-7 text-base font-bold text-[#06216B] shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-[#8EB9FF] hover:shadow-lg hover:shadow-[#06216B]/10" data-testid="hero-cta-register-org">
+                  Register Organisation<Building2 className="size-4" />
+                </Button>
               </div>
               <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-[#3F5885]" data-testid="hero-trust-line">
                 <span>Built for modern organisations</span>
@@ -660,6 +669,7 @@ export default function Home() {
         </div>
       </footer>
       <DemoModal open={demoOpen} onOpenChange={setDemoOpen} />
+      <RegisterOrgModal open={registerOpen} onOpenChange={setRegisterOpen} />
     </div>
   );
 }
