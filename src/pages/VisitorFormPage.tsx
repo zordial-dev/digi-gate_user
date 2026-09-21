@@ -21,6 +21,7 @@ export default function VisitorFormPage() {
 
   const [loadingOrg, setLoadingOrg] = useState(true);
   const [orgError, setOrgError] = useState<string | null>(null);
+  const [logoError, setLogoError] = useState(false);
 
   // Fetch & validate organisation details when page loads
   useEffect(() => {
@@ -220,64 +221,55 @@ export default function VisitorFormPage() {
     );
   }
 
-  // 3. Branding Header Component
-  const Branding = () => {
-    let subtitle = '';
-    let showWelcomeBack = false;
-
-    if (state.showConfirm) {
-      subtitle = 'Visit registered successfully!';
-    } else if (state.step === 'mobile') {
-      subtitle = 'Enter your mobile number to check in';
-    } else if (state.step === 'otp') {
-      subtitle = `Enter 6-digit OTP code sent to +91 ${state.mobile}`;
-    } else if (state.step === 'form') {
-      subtitle = 'Complete your profile to generate gate pass';
-      showWelcomeBack = state.isReturning;
-    }
-
-    return (
-      <div className="text-center mb-6 space-y-2">
-        {state.org.logo_url ? (
-          <img
-            src={state.org.logo_url}
-            alt={state.org.name}
-            className="h-14 mx-auto object-contain rounded-xl p-1 bg-white border border-slate-200 shadow-sm"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="w-12 h-12 rounded-2xl bg-[#035352] text-[#F3E8BC] flex items-center justify-center mx-auto shadow-md border border-[#035352]">
-            <Building2 className="w-6 h-6" />
-          </div>
-        )}
-        
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#172525] tracking-tight">
-            {state.org.name}
-          </h1>
-          <p className="text-xs sm:text-sm font-bold text-[#035352]">
-            {subtitle}
-          </p>
-        </div>
-
-        {showWelcomeBack && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-bold border border-emerald-300 shadow-sm">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Welcome Back! Profile Auto-Filled</span>
-          </span>
-        )}
-      </div>
-    );
-  };
+  // 3. Branding subtitle logic (inlined to avoid flicker from inner-component remounting)
+  let brandingSubtitle = '';
+  let showWelcomeBack = false;
+  if (state.showConfirm) {
+    brandingSubtitle = 'Visit registered successfully!';
+  } else if (state.step === 'mobile') {
+    brandingSubtitle = 'Enter your mobile number to check in';
+  } else if (state.step === 'otp') {
+    brandingSubtitle = `Enter 6-digit OTP code sent to +91 ${state.mobile}`;
+  } else if (state.step === 'form') {
+    brandingSubtitle = 'Complete your profile to generate gate pass';
+    showWelcomeBack = state.isReturning;
+  }
 
   // 4. Main Visitor Check-In Form Screen
   return (
     <div className="min-h-screen py-6 px-4 bg-[#F4F7F6] flex flex-col justify-between selection:bg-[#035352] selection:text-white">
       <div className="max-w-lg mx-auto w-full space-y-5">
         {/* Branding Header */}
-        <Branding />
+        <div className="text-center mb-6 space-y-2">
+          {state.org.logo_url && !logoError ? (
+            <img
+              src={state.org.logo_url}
+              alt={state.org.name}
+              className="h-14 mx-auto object-contain rounded-xl p-1 bg-white border border-slate-200 shadow-sm"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-2xl bg-[#035352] text-[#F3E8BC] flex items-center justify-center mx-auto shadow-md border border-[#035352]">
+              <Building2 className="w-6 h-6" />
+            </div>
+          )}
+
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#172525] tracking-tight">
+              {state.org.name}
+            </h1>
+            <p className="text-xs sm:text-sm font-bold text-[#035352]">
+              {brandingSubtitle}
+            </p>
+          </div>
+
+          {showWelcomeBack && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-bold border border-emerald-300 shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Welcome Back! Profile Auto-Filled</span>
+            </span>
+          )}
+        </div>
 
         {/* Global Notification Banner */}
         {state.msg && (
