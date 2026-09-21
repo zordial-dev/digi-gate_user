@@ -10,6 +10,7 @@ export default function RegisterOrgModal({ open, onOpenChange }: { open: boolean
 
   const [formData, setFormData] = useState({
     name: "",
+    code: "",
     address: "",
     city: "",
     state: "",
@@ -56,7 +57,7 @@ export default function RegisterOrgModal({ open, onOpenChange }: { open: boolean
           setSuccess(false);
           setError(null);
           setFormData({
-            name: "", address: "", city: "", state: "",
+            name: "", code: "", address: "", city: "", state: "",
             country: "", pincode: "", phone: "", email: "", website: ""
           });
         }, 300);
@@ -97,9 +98,15 @@ export default function RegisterOrgModal({ open, onOpenChange }: { open: boolean
                 </div>
               )}
               
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#3F5885]">Organisation Name *</label>
-                <input required name="name" value={formData.name} onChange={handleChange} className="w-full rounded-xl border border-[#DCE6F7] px-3.5 py-2.5 text-sm focus:border-[#06216B] focus:outline-none focus:ring-1 focus:ring-[#06216B]" placeholder="Zordial Tech" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#3F5885]">Organisation Name *</label>
+                  <input required name="name" value={formData.name} onChange={handleChange} className="w-full rounded-xl border border-[#DCE6F7] px-3.5 py-2.5 text-sm focus:border-[#06216B] focus:outline-none focus:ring-1 focus:ring-[#06216B]" placeholder="Zordial Tech" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#3F5885]">Unique Code *</label>
+                  <input required name="code" value={formData.code} onChange={handleChange} className="w-full rounded-xl border border-[#DCE6F7] px-3.5 py-2.5 text-sm focus:border-[#06216B] focus:outline-none focus:ring-1 focus:ring-[#06216B]" placeholder="ZOR001" />
+                </div>
               </div>
 
               <div className="space-y-1.5">
