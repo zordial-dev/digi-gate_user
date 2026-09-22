@@ -2,11 +2,7 @@ import axios from 'axios';
 
 const getApiUrl = (): string => {
   const env = (import.meta as any).env || {};
-  const url = env.VITE_API_URL || env.API_URL;
-  if (url && typeof url === 'string' && url.trim() !== '') {
-    return url.trim();
-  }
-  return 'https://digi-gate-backend.onrender.com/api';
+  return env.VITE_API_URL || env.API_URL || 'http://localhost:5000/api';
 };
 
 const apiClient = axios.create({

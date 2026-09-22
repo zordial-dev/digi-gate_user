@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
   Bell,
@@ -25,13 +24,13 @@ import {
   UsersRound,
   X,
   Zap,
-  type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import RegisterBusinessModal from "@/components/RegisterBusinessModal";
 
-type IconComponent = LucideIcon;
+type IconComponent = any;
 
 const navItems = [
   ["Why Digi-Gate", "#why-digi-gate", "nav-link-why-digi-gate"],
@@ -160,13 +159,13 @@ function ConceptualProductPreview() {
   );
 }
 
-function DemoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+function DemoModal({ open, onOpenChange, onOpenRegister }: { open: boolean; onOpenChange: (open: boolean) => void; onOpenRegister: () => void }) {
   const navigate = useNavigate();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md overflow-hidden rounded-[1.75rem] border-[#DCE6F7] p-0 shadow-2xl shadow-[#06216B]/20 sm:rounded-[2rem]" data-testid="demo-modal">
         <div className="relative overflow-hidden bg-[#061A54] px-6 pb-8 pt-7 text-white sm:px-8 sm:pt-8"><div className="absolute -right-12 -top-16 size-44 rounded-full bg-[#38BDF8]/20 blur-3xl" /><div className="relative"><Badge className="border-white/15 bg-white/10 text-[#A8E9FF]" data-testid="demo-modal-eyebrow">Start a conversation</Badge><DialogHeader className="mt-4 text-left"><DialogTitle className="font-heading text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl" data-testid="demo-modal-title">See a smarter arrival in action.</DialogTitle><DialogDescription className="mt-2 max-w-sm text-sm leading-6 text-blue-100/75" data-testid="demo-modal-description">Welcome to the Digi-Gate visitor portal.</DialogDescription></DialogHeader></div></div>
-        <div className="px-6 py-7 sm:px-8 sm:py-8" data-testid="demo-modal-placeholder-content"><div className="rounded-2xl border border-[#DCE6F7] bg-[#F8FAFC] p-5"><p className="text-sm font-bold text-[#06216B]" data-testid="demo-modal-contact-heading">Ready to Check In?</p><p className="mt-2 text-sm leading-6 text-slate-600" data-testid="demo-modal-contact-copy">Scan the gate QR code or enter your destination organization ID to complete your entry form.</p><div className="mt-5 space-y-3 text-sm"><Button onClick={() => { onOpenChange(false); navigate("/scan"); }} className="w-full h-11 bg-[#153D9F] hover:bg-[#06216B] text-white font-bold rounded-xl flex items-center justify-center gap-2"><QrCode className="size-4" /> Open QR Scanner</Button></div></div><Button onClick={() => onOpenChange(false)} className="mt-6 h-12 w-full rounded-xl bg-[#06216B] font-bold hover:bg-[#153D9F]" data-testid="demo-modal-close-button">Continue exploring<ArrowRight className="ml-2 size-4" /></Button></div>
+        <div className="px-6 py-7 sm:px-8 sm:py-8" data-testid="demo-modal-placeholder-content"><div className="rounded-2xl border border-[#DCE6F7] bg-[#F8FAFC] p-5"><p className="text-sm font-bold text-[#06216B]" data-testid="demo-modal-contact-heading">Ready to Check In or Register?</p><p className="mt-2 text-sm leading-6 text-slate-600" data-testid="demo-modal-contact-copy">Scan the gate QR code to check in, or register your organization with Digi-Gate.</p><div className="mt-5 space-y-3 text-sm"><Button onClick={() => { onOpenChange(false); navigate("/scan"); }} className="w-full h-11 bg-[#153D9F] hover:bg-[#06216B] text-white font-bold rounded-xl flex items-center justify-center gap-2"><QrCode className="size-4" /> Open QR Scanner</Button><Button onClick={() => { onOpenChange(false); onOpenRegister(); }} className="w-full h-11 bg-white border-2 border-[#06216B] text-[#06216B] hover:bg-[#F1F6FD] font-bold rounded-xl flex items-center justify-center gap-2"><Building2 className="size-4 text-[#153D9F]" /> Register Your Business</Button></div></div><Button onClick={() => onOpenChange(false)} className="mt-6 h-12 w-full rounded-xl bg-[#06216B] font-bold hover:bg-[#153D9F]" data-testid="demo-modal-close-button">Continue exploring<ArrowRight className="ml-2 size-4" /></Button></div>
       </DialogContent>
     </Dialog>
   );
@@ -177,6 +176,7 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const openDemo = () => { setMobileMenuOpen(false); setDemoOpen(true); };
 
@@ -196,6 +196,9 @@ export default function Home() {
             {navItems.map(([label, href, testId]) => <a key={href} href={href} className="text-sm font-semibold text-[#3F5885] hover:text-[#06216B] transition-colors" data-testid={testId}>{label}</a>)}
           </nav>
           <div className="hidden items-center gap-3 lg:flex">
+            <Button onClick={() => setRegisterModalOpen(true)} className="rounded-xl border border-[#06216B] bg-[#06216B] px-4 font-bold text-white shadow-md hover:bg-[#153D9F] transition-all flex items-center gap-2" data-testid="nav-cta-register-business">
+              <Building2 className="size-4" /> Register Business
+            </Button>
             <Button onClick={() => navigate("/scan")} className="rounded-xl border border-[#DCE6F7] bg-white px-4 font-bold text-[#06216B] hover:bg-[#F1F6FD] shadow-sm flex items-center gap-2" data-testid="nav-cta-scan-qr">
               <QrCode className="size-4 text-[#153D9F]" /> Scan QR
             </Button>
@@ -214,6 +217,9 @@ export default function Home() {
                 {navItems.map(([label, href, testId]) => <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold text-[#3F5885] hover:bg-[#F1F5FB] hover:text-[#06216B]" data-testid={`${testId}-mobile`}>{label}</a>)}
               </div>
               <div className="mt-4 flex flex-col gap-3 border-t border-[#DCE6F7] pt-4">
+                <Button onClick={() => { setMobileMenuOpen(false); setRegisterModalOpen(true); }} className="w-full rounded-xl bg-[#06216B] font-bold text-white flex items-center justify-center gap-2" data-testid="nav-cta-register-business-mobile">
+                  <Building2 className="size-4" /> Register Business
+                </Button>
                 <Button onClick={() => { setMobileMenuOpen(false); navigate("/scan"); }} className="w-full rounded-xl border border-[#DCE6F7] bg-white font-bold text-[#06216B] flex items-center justify-center gap-2" data-testid="nav-cta-scan-qr-mobile">
                   <QrCode className="size-4 text-[#153D9F]" /> Scan Gate QR
                 </Button>
@@ -238,12 +244,12 @@ export default function Home() {
                 Digi-Gate helps organisations replace traditional paper registers with a more organised, professional digital visitor-management experience.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
-                <Button onClick={() => navigate("/scan")} size="lg" className="h-14 rounded-xl bg-gradient-to-r from-[#06216B] via-[#153D9F] to-[#021767] px-7 text-base font-bold shadow-xl shadow-[#06216B]/20 hover:-translate-y-1 flex items-center justify-center gap-2" data-testid="hero-cta-scan-gate">
-                  <QrCode className="size-5 text-[#8EE7FF]" /> Scan Gate QR
+                <Button onClick={() => setRegisterModalOpen(true)} size="lg" className="h-14 rounded-xl bg-gradient-to-r from-[#06216B] via-[#153D9F] to-[#021767] px-7 text-base font-bold shadow-xl shadow-[#06216B]/20 hover:-translate-y-1 flex items-center justify-center gap-2" data-testid="hero-cta-register-business">
+                  <Building2 className="size-5 text-[#8EE7FF]" /> Register Business
                 </Button>
-                <a href="#product-preview" className="inline-flex h-14 items-center justify-center gap-2 rounded-xl border border-[#C9D8EF] bg-white px-7 text-base font-bold text-[#06216B] shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-[#8EB9FF] hover:shadow-lg hover:shadow-[#06216B]/10" data-testid="hero-cta-explore-product">
-                  Explore Digi-Gate<ArrowDownRight className="size-4" />
-                </a>
+                <Button onClick={() => navigate("/scan")} size="lg" className="h-14 rounded-xl border border-[#C9D8EF] bg-white px-7 text-base font-bold text-[#06216B] shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-[#8EB9FF] hover:shadow-lg hover:shadow-[#06216B]/10 flex items-center justify-center gap-2" data-testid="hero-cta-scan-gate">
+                  <QrCode className="size-5 text-[#153D9F]" /> Scan Gate QR
+                </Button>
               </div>
               <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-[#3F5885]" data-testid="hero-trust-line">
                 <span>Built for modern organisations</span>
@@ -602,6 +608,20 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="register-business" className="bg-[#061A54] py-20 text-white relative overflow-hidden" data-testid="register-business-section">
+          <div className="absolute right-0 top-0 size-96 rounded-full bg-[#38BDF8]/10 blur-3xl pointer-events-none" />
+          <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-4 sm:px-6 md:flex-row md:items-center lg:px-8 relative z-10">
+            <Reveal>
+              <Badge className="border-white/20 bg-white/10 text-[#8EE7FF] mb-3" data-testid="register-section-badge">For Businesses & Institutions</Badge>
+              <h2 className="font-heading text-3xl font-bold tracking-[-0.05em] text-white sm:text-4xl" data-testid="register-section-heading">Want to use Digi-Gate for your organisation?</h2>
+              <p className="mt-3 max-w-xl text-base leading-7 text-blue-100/75" data-testid="register-section-copy">Register your organisation details today to set up digital visitor management for your workspace.</p>
+            </Reveal>
+            <Button onClick={() => setRegisterModalOpen(true)} size="lg" className="rounded-xl bg-white px-7 py-4 font-bold text-[#06216B] shadow-xl hover:-translate-y-1 hover:bg-[#E8F8FF] transition-all flex items-center gap-2" data-testid="register-section-cta">
+              <Building2 className="size-5 text-[#153D9F]" /> Register Your Organisation
+            </Button>
+          </div>
+        </section>
+
         <section id="contact" className="bg-[#F8FAFC] py-20" data-testid="contact-section">
           <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 px-4 sm:px-6 md:flex-row md:items-center lg:px-8">
             <Reveal>
@@ -609,9 +629,14 @@ export default function Home() {
               <h2 className="mt-3 font-heading text-3xl font-bold tracking-[-0.05em] text-[#06216B] sm:text-4xl" data-testid="contact-heading">Make every arrival more professional.</h2>
               <p className="mt-3 max-w-xl text-base leading-7 text-slate-600" data-testid="contact-copy">Give your visitors a better experience and your organisation better control with Digi-Gate.</p>
             </Reveal>
-            <Button onClick={() => navigate("/scan")} size="lg" className="rounded-xl bg-[#06216B] px-7 font-bold shadow-lg shadow-[#06216B]/15 hover:-translate-y-1 hover:bg-[#153D9F] flex items-center gap-2" data-testid="contact-cta-scan">
-              <QrCode className="size-5 text-[#8EE7FF]" /> Scan Gate QR
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button onClick={() => setRegisterModalOpen(true)} size="lg" className="rounded-xl border border-[#06216B] bg-white px-7 font-bold text-[#06216B] hover:bg-[#F1F6FD] shadow-sm flex items-center gap-2" data-testid="contact-cta-register">
+                <Building2 className="size-5 text-[#153D9F]" /> Register Business
+              </Button>
+              <Button onClick={() => navigate("/scan")} size="lg" className="rounded-xl bg-[#06216B] px-7 font-bold shadow-lg shadow-[#06216B]/15 hover:-translate-y-1 hover:bg-[#153D9F] flex items-center gap-2" data-testid="contact-cta-scan">
+                <QrCode className="size-5 text-[#8EE7FF]" /> Scan Gate QR
+              </Button>
+            </div>
           </div>
         </section>
       </main>
@@ -640,6 +665,7 @@ export default function Home() {
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#8EB9FF]">Company</p>
               <div className="mt-5 flex flex-col gap-3 text-sm text-blue-100/65">
+                <a href="#register-business" onClick={(e) => { e.preventDefault(); setRegisterModalOpen(true); }} className="transition-colors hover:text-white font-semibold text-white" data-testid="footer-link-register">Register Business</a>
                 <a href="#faq" className="transition-colors hover:text-white" data-testid="footer-link-faq">FAQ</a>
                 <a href="#contact" className="transition-colors hover:text-white" data-testid="footer-link-contact">Contact</a>
                 <a href="#security" className="transition-colors hover:text-white" data-testid="footer-link-trust">Trust & control</a>
@@ -648,9 +674,14 @@ export default function Home() {
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#8EB9FF]">Ready when you are</p>
               <p className="mt-4 text-xs text-blue-100/60">Modernize your entrance today with Digi-Gate.</p>
-              <Button onClick={() => navigate("/scan")} className="mt-4 rounded-xl bg-[#153D9F] hover:bg-[#06216B] text-white text-xs font-bold py-2.5 px-4 flex items-center gap-2">
-                <QrCode className="size-4" /> Gate QR Scanner
-              </Button>
+              <div className="mt-4 flex flex-col gap-2">
+                <Button onClick={() => setRegisterModalOpen(true)} className="rounded-xl bg-white text-[#06216B] hover:bg-blue-50 text-xs font-bold py-2.5 px-4 flex items-center gap-2">
+                  <Building2 className="size-4 text-[#153D9F]" /> Business Registration
+                </Button>
+                <Button onClick={() => navigate("/scan")} className="rounded-xl bg-[#153D9F] hover:bg-[#06216B] text-white text-xs font-bold py-2.5 px-4 flex items-center gap-2">
+                  <QrCode className="size-4" /> Gate QR Scanner
+                </Button>
+              </div>
             </div>
           </div>
           <div className="mt-12 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-blue-100/50">
@@ -659,7 +690,8 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      <DemoModal open={demoOpen} onOpenChange={setDemoOpen} />
+      <DemoModal open={demoOpen} onOpenChange={setDemoOpen} onOpenRegister={() => setRegisterModalOpen(true)} />
+      <RegisterBusinessModal open={registerModalOpen} onOpenChange={setRegisterModalOpen} />
     </div>
   );
 }

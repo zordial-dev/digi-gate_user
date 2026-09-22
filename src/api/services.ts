@@ -4,6 +4,17 @@ import type { Organisation, Visitor, VisitorFormData, VisitorVisit } from '@/typ
 export const organisationApi = {
   getById: (id: number | string) =>
     apiClient.get<{ success: boolean; data: Organisation | null; error?: string }>(`/organisations/${id}`),
+
+  register: (formData: FormData) =>
+    apiClient.post<{ success: boolean; message: string; data: Organisation; error?: string }>(
+      '/organisations/register',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    ),
 };
 
 export const visitorApi = {
