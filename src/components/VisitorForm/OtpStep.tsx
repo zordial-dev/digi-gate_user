@@ -16,15 +16,15 @@ export default function OtpStep() {
   }, [state.otpTimer, dispatch]);
 
   const handleVerify = () => {
-    if (!state.otp || state.otp.length !== 6) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please enter valid 6-digit OTP code' }));
+    if (!state.otp || state.otp.length !== 4) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Please enter valid 4-digit OTP code' }));
       return;
     }
-    if (state.otp === '123456' || state.otp === '000000') {
+    if (state.otp === '1234') {
       dispatch(actions.setMsg({ type: 'success', text: 'OTP code verified successfully!' }));
       dispatch(actions.setStep('form'));
     } else {
-      dispatch(actions.setMsg({ type: 'error', text: 'Invalid OTP code. Please enter 123456 for test' }));
+      dispatch(actions.setMsg({ type: 'error', text: 'Invalid OTP code. Please enter 1234' }));
     }
   };
 
@@ -51,24 +51,24 @@ export default function OtpStep() {
 
       <div>
         <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5 text-center">
-          6-Digit OTP Code *
+          4-Digit OTP Code *
         </label>
         <input
           type="text"
           value={state.otp}
           onChange={(e) => dispatch(actions.setOtp(e.target.value.replace(/\D/g, '')))}
-          maxLength={6}
-          placeholder="••••••"
+          maxLength={4}
+          placeholder="1234"
           className="w-full px-4 py-3 border border-slate-300 rounded-2xl outline-none text-center text-xl font-mono font-extrabold text-slate-800 placeholder-slate-300 tracking-[8px] focus:border-[#035352] focus:ring-2 focus:ring-[#035352]/20 transition-all shadow-sm"
         />
         <div className="mt-1.5 text-center text-[11px] font-semibold text-slate-400">
-          {state.otp.length}/6 digits entered
+          {state.otp.length}/4 digits entered
         </div>
       </div>
 
       <div className="p-3.5 rounded-2xl bg-[#035352]/5 border border-[#035352]/20 text-xs font-bold text-[#035352] flex items-center gap-2">
         <Shield className="w-4 h-4 shrink-0 text-[#035352]" />
-        <span>Use verification OTP code <strong>123456</strong> for testing.</span>
+        <span>Use static OTP code <strong>1234</strong> for verification.</span>
       </div>
 
       <div className="flex gap-3">
@@ -84,7 +84,7 @@ export default function OtpStep() {
         </button>
         <button 
           onClick={handleVerify}
-          disabled={state.otp.length !== 6}
+          disabled={state.otp.length !== 4}
           className="flex-1 py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 text-xs uppercase tracking-wider"
         >
           <span>Verify OTP</span>

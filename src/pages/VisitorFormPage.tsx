@@ -8,19 +8,19 @@ import ConfirmationScreen from '@/components/VisitorForm/ConfirmationScreen';
 import PersonalTab from '@/components/VisitorForm/PersonalTab';
 import VisitTab from '@/components/VisitorForm/VisitTab';
 import SelfieTab from '@/components/VisitorForm/SelfieTab';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { selfieStore } from '@/utils/selfieStore';
 import { visitorApi, visitApi, organisationApi } from '@/api/services';
-import { CheckCircle2, User, Camera, Target, ArrowLeft, ArrowRight, Building2, AlertCircle, QrCode } from 'lucide-react';
+import { CheckCircle2, User, Camera, Target, ArrowLeft, ArrowRight, Building2, AlertCircle } from 'lucide-react';
 
 export default function VisitorFormPage() {
   const { orgId } = useParams();
-  const navigate = useNavigate();
   const state = useSelector((state: RootState) => state.visitor);
   const dispatch = useDispatch();
 
   const [loadingOrg, setLoadingOrg] = useState(true);
   const [orgError, setOrgError] = useState<string | null>(null);
+  const [orgName, setOrgName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
 
   // Fetch & validate organisation details when page loads
@@ -34,22 +34,29 @@ export default function VisitorFormPage() {
 
       setLoadingOrg(true);
       setOrgError(null);
+      setOrgName(null);
 
       try {
         const response = await organisationApi.getById(orgId.trim());
-        const result = response.data;
+        const result = response.data as any;
 
         if (result && result.success && result.data && result.data.id) {
           dispatch(actions.setOrg(result.data));
+          setOrgName(result.data.name || null);
           setOrgError(null);
         } else {
           dispatch(actions.setOrg(null));
-          setOrgError(result?.error || `Organisation "${orgId}" not found or inactive.`);
+          if (result?.org_name) setOrgName(result.org_name);
+          setOrgError(result?.error || 'Organisation is inactive');
         }
       } catch (error: any) {
         console.error('Failed to fetch organisation:', error);
         dispatch(actions.setOrg(null));
-        const errMsg = error.response?.data?.error || `Invalid Organisation: Could not verify "${orgId}".`;
+        const respData = error.response?.data;
+        if (respData?.org_name) {
+          setOrgName(respData.org_name);
+        }
+        const errMsg = respData?.error || 'Organisation is inactive';
         setOrgError(errMsg);
       } finally {
         setLoadingOrg(false);
@@ -165,8 +172,10 @@ export default function VisitorFormPage() {
     );
   }
 
-  // 2. Invalid Organisation Screen (Shown BEFORE requesting Mobile Number for OTP)
+  // 2. Invalid / Inactive Organisation Screen (Shown BEFORE requesting Mobile Number for OTP)
   if (orgError || !state.org) {
+    const isInactive = orgError?.toLowerCase().includes('inactive');
+    const displayName = orgName || orgId;
     return (
       <div className="min-h-screen py-12 px-4 bg-[#F4F7F6] flex flex-col items-center justify-center selection:bg-rose-600 selection:text-white">
         <div className="max-w-md w-full bg-white rounded-3xl border border-rose-200/90 shadow-2xl p-6 sm:p-8 text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
@@ -176,41 +185,41 @@ export default function VisitorFormPage() {
 
           <div className="space-y-2">
             <span className="inline-block px-3 py-1 bg-rose-100 text-rose-800 text-[11px] font-extrabold uppercase tracking-wider rounded-full border border-rose-300">
-              Invalid Organisation
+              {isInactive ? 'Organisation Inactive' : 'Invalid Organisation'}
             </span>
             <h1 className="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">
-              Organisation Not Found
+              {isInactive ? 'Organisation is Inactive' : 'Organisation Not Found'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-              The organisation code or name <span className="font-bold text-slate-900 underline decoration-rose-400 decoration-2">"{orgId}"</span> is invalid, inactive, or not registered in Digi-Gate.
+              {isInactive ? (
+                <>
+                  The organisation <span className="font-bold text-slate-900 underline decoration-rose-400 decoration-2">"{displayName}"</span> is currently inactive or pending administrator approval.
+                </>
+              ) : (
+                <>
+                  The organisation <span className="font-bold text-slate-900 underline decoration-rose-400 decoration-2">"{displayName}"</span> was not found in Digi-Gate.
+                </>
+              )}
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs text-slate-600 space-y-1.5">
             <p className="font-bold text-slate-700">What should I do?</p>
             <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-500">
-              <li>Check for spelling errors in the organisation name or code.</li>
-              <li>Scan the official gate QR code provided at the reception desk.</li>
-              <li>Contact security or your host for the valid organisation ID.</li>
+              {isInactive ? (
+                <>
+                  <li>Check with the organisation administrator to ensure their Digi-Gate account is active.</li>
+                  <li>Verify if registration approval is pending.</li>
+                  <li>Contact reception or security for assistance.</li>
+                </>
+              ) : (
+                <>
+                  <li>Check for spelling errors in the organisation name or ID.</li>
+                  <li>Scan the official gate QR code provided at the reception desk.</li>
+                  <li>Contact security or your host for the valid organisation ID.</li>
+                </>
+              )}
             </ul>
-          </div>
-
-          <div className="flex flex-col gap-2.5 pt-2">
-            <button
-              onClick={() => navigate('/scan')}
-              className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
-            >
-              <QrCode className="w-4 h-4" />
-              <span>Scan Gate QR Code</span>
-            </button>
-            
-            <button
-              onClick={() => navigate('/')}
-              className="w-full py-3 rounded-2xl font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Return to Digi-Gate Home</span>
-            </button>
           </div>
         </div>
 
@@ -229,7 +238,7 @@ export default function VisitorFormPage() {
   } else if (state.step === 'mobile') {
     brandingSubtitle = 'Enter your mobile number to check in';
   } else if (state.step === 'otp') {
-    brandingSubtitle = `Enter 6-digit OTP code sent to +91 ${state.mobile}`;
+    brandingSubtitle = `Enter 4-digit OTP code sent to +91 ${state.mobile}`;
   } else if (state.step === 'form') {
     brandingSubtitle = 'Complete your profile to generate gate pass';
     showWelcomeBack = state.isReturning;
@@ -274,11 +283,10 @@ export default function VisitorFormPage() {
         {/* Global Notification Banner */}
         {state.msg && (
           <div
-            className={`p-3.5 rounded-2xl text-xs font-bold shadow-sm animate-in fade-in ${
-              state.msg.type === 'success' 
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
-                : 'bg-rose-50 text-rose-800 border border-rose-200'
-            }`}
+            className={`p-3.5 rounded-2xl text-xs font-bold shadow-sm animate-in fade-in ${state.msg.type === 'success'
+              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              : 'bg-rose-50 text-rose-800 border border-rose-200'
+              }`}
           >
             {state.msg.text}
           </div>
@@ -305,11 +313,10 @@ export default function VisitorFormPage() {
                       <button
                         key={i}
                         onClick={() => dispatch(actions.setTab(i))}
-                        className={`flex-1 py-3 px-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                          state.tab === i
-                            ? 'bg-[#035352] text-[#F3E8BC] shadow-md shadow-[#035352]/20'
-                            : 'text-slate-500 hover:text-[#035352]'
-                        }`}
+                        className={`flex-1 py-3 px-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${state.tab === i
+                          ? 'bg-[#035352] text-[#F3E8BC] shadow-md shadow-[#035352]/20'
+                          : 'text-slate-500 hover:text-[#035352]'
+                          }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
                         <span className="hidden sm:inline">{tab.title}</span>
