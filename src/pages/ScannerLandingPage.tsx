@@ -155,11 +155,10 @@ export default function ScannerLandingPage() {
           <div className="flex border-b border-slate-100 bg-slate-50/80 p-1.5 gap-1">
             <button
               onClick={() => setActiveTab('camera')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
-                activeTab === 'camera'
-                  ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
-                  : 'text-slate-500 hover:text-[#035352]'
-              }`}
+              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'camera'
+                ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
+                : 'text-slate-500 hover:text-[#035352]'
+                }`}
             >
               <Camera className="w-4 h-4" />
               <span>Scan QR</span>
@@ -167,11 +166,10 @@ export default function ScannerLandingPage() {
 
             <button
               onClick={() => setActiveTab('upload')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
-                activeTab === 'upload'
-                  ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
-                  : 'text-slate-500 hover:text-[#035352]'
-              }`}
+              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'upload'
+                ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
+                : 'text-slate-500 hover:text-[#035352]'
+                }`}
             >
               <Upload className="w-4 h-4" />
               <span>Upload</span>
@@ -179,11 +177,10 @@ export default function ScannerLandingPage() {
 
             <button
               onClick={() => setActiveTab('manual')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${
-                activeTab === 'manual'
-                  ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
-                  : 'text-slate-500 hover:text-[#035352]'
-              }`}
+              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'manual'
+                ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
+                : 'text-slate-500 hover:text-[#035352]'
+                }`}
             >
               <Building2 className="w-4 h-4" />
               <span>Code</span>
