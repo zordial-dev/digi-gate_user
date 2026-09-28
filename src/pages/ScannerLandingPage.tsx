@@ -225,7 +225,7 @@ export default function ScannerLandingPage() {
                       <p className="text-xs font-bold text-slate-300">Camera preview starting...</p>
                       <button
                         onClick={startCamera}
-                        className="px-5 py-2.5 rounded-xl bg-[#035352] text-white font-bold text-xs hover:bg-[#023e3d] shadow-md shadow-[#035352]/30 transition-all flex items-center gap-2"
+                        className="px-6 py-2.5 rounded-full bg-[#035352] text-white font-bold text-xs hover:bg-[#023e3d] shadow-md shadow-[#035352]/30 transition-all flex items-center gap-2 cursor-pointer"
                       >
                         <RefreshCw className="w-4 h-4" />
                         <span>Enable Camera Scanner</span>
@@ -298,7 +298,7 @@ export default function ScannerLandingPage() {
                 <button
                   type="submit"
                   disabled={processing || !manualCode.trim()}
-                  className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider"
+                  className="w-full py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
                 >
                   <span>Go to Visitor Form</span>
                   <ArrowRight className="w-4 h-4" />

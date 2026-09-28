@@ -77,7 +77,7 @@ export default function OtpStep() {
             dispatch(actions.setStep('mobile'));
             dispatch(actions.setMsg(null));
           }}
-          className="flex-1 py-3.5 rounded-2xl font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm"
+          className="flex-1 py-3.5 rounded-full font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -85,7 +85,7 @@ export default function OtpStep() {
         <button 
           onClick={handleVerify}
           disabled={state.otp.length !== 4}
-          className="flex-1 py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 text-xs uppercase tracking-wider"
+          className="flex-1 py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
         >
           <span>Verify OTP</span>
           <ArrowRight className="w-4 h-4" />

@@ -110,7 +110,7 @@ export default function ConfirmationScreen() {
       {/* Action Button */}
       <button
         onClick={handleRegisterAnother}
-        className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+        className="w-full h-12 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer"
       >
         <RefreshCw className="w-4 h-4" />
         <span>Return to Kiosk / Check-In Another Visitor</span>

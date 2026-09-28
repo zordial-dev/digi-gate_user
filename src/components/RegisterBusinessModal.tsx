@@ -135,19 +135,27 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-[1.75rem] border-[#DCE6F7] p-0 shadow-2xl shadow-[#06216B]/20 sm:rounded-[2rem]" data-testid="register-business-modal">
+      <DialogContent className="max-w-4xl w-full rounded-[2rem] border border-slate-200/90 bg-white p-0 shadow-2xl shadow-[#035352]/20 overflow-hidden" data-testid="register-business-modal">
         {/* Header Banner */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-[#061A54] via-[#0A2779] to-[#153D9F] px-6 py-7 text-white sm:px-8 sm:py-8">
-          <div className="absolute -right-10 -top-14 size-44 rounded-full bg-[#38BDF8]/20 blur-3xl" />
-          <div className="relative z-10">
-            <Badge className="border-white/20 bg-white/10 text-[#A8E9FF]" data-testid="register-modal-badge">
-              <Sparkles className="mr-1 size-3.5" /> Digi-Gate Business Portal
+        <div className="relative rounded-t-[2rem] overflow-hidden bg-gradient-to-r from-[#023e3d] via-[#035352] to-[#05706f] px-6 py-5 text-white sm:px-8">
+          <div className="absolute -right-10 -top-14 size-44 rounded-full bg-[#F3E8BC]/20 blur-3xl pointer-events-none" />
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close modal"
+            className="absolute right-5 top-5 z-20 flex size-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
+          >
+            <X className="size-4" />
+          </button>
+          <div className="relative z-10 pr-10">
+            <Badge className="border-[#F3E8BC]/30 bg-[#F3E8BC]/15 text-[#F3E8BC] text-[11px] py-0.5 px-2.5 rounded-full" data-testid="register-modal-badge">
+              <Sparkles className="mr-1 size-3 text-[#F3E8BC]" /> Digi-Gate Business Portal
             </Badge>
-            <DialogHeader className="mt-3 text-left">
-              <DialogTitle className="font-heading text-2xl font-bold tracking-[-0.04em] text-white sm:text-3xl" data-testid="register-modal-title">
+            <DialogHeader className="mt-2 text-left">
+              <DialogTitle className="font-heading text-xl font-bold tracking-tight text-white sm:text-2xl" data-testid="register-modal-title">
                 Register Your Organisation
               </DialogTitle>
-              <DialogDescription className="mt-1 text-sm text-blue-100/80" data-testid="register-modal-description">
+              <DialogDescription className="mt-0.5 text-xs text-[#F4F7F6]/85" data-testid="register-modal-description">
                 Join Digi-Gate to modernize your workplace visitor management experience.
               </DialogDescription>
             </DialogHeader>
@@ -155,40 +163,40 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
         </div>
 
         {/* Content Body */}
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-7 bg-white rounded-b-[2rem]">
           {successData ? (
-            <div className="py-4 text-center space-y-5" data-testid="register-success-view">
-              <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[#EAFBF5] text-[#14845D] ring-8 ring-[#EAFBF5]/50">
-                <CheckCircle2 className="size-10" />
+            <div className="py-4 text-center space-y-4" data-testid="register-success-view">
+              <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-50 text-[#10B981] ring-8 ring-emerald-100/60">
+                <CheckCircle2 className="size-8" />
               </div>
 
               <div>
-                <h3 className="font-heading text-2xl font-bold text-[#06216B]">
+                <h3 className="font-heading text-xl font-bold text-[#035352]">
                   Registration Submitted!
                 </h3>
-                <p className="mt-2 text-sm text-slate-600 max-w-md mx-auto">
-                  Thank you for registering <span className="font-bold text-[#06216B]">{successData.name}</span>. Your registration details have been recorded successfully.
+                <p className="mt-1.5 text-xs text-[#4a5d5c] max-w-md mx-auto">
+                  Thank you for registering <span className="font-bold text-[#172525]">{successData.name}</span>. Your registration details have been recorded successfully.
                 </p>
               </div>
 
               {/* Status Info Box */}
-              <div className="rounded-2xl border border-[#DCE6F7] bg-[#F8FAFC] p-5 text-left space-y-3">
+              <div className="rounded-xl border border-slate-200 bg-[#F4F7F6] p-4 text-left space-y-2.5 max-w-lg mx-auto">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Registration Status</span>
-                  <Badge className="border-amber-200 bg-amber-50 text-amber-700 font-bold flex items-center gap-1">
+                  <span className="text-[11px] font-semibold text-[#4a5d5c] uppercase tracking-wider">Registration Status</span>
+                  <Badge className="border-amber-200 bg-amber-50 text-amber-800 font-bold flex items-center gap-1 text-[11px] py-0.5 px-2">
                     <Clock className="size-3" /> Pending Approval
                   </Badge>
                 </div>
-                <div className="text-xs text-slate-600 space-y-1.5">
-                  <p><span className="font-medium text-slate-700">Organisation Reference:</span> #{successData.id}</p>
-                  <p className="text-slate-600">Your registration is currently under review. Once approved by an administrator, your organisation access and login credentials will be activated.</p>
+                <div className="text-xs text-[#4a5d5c] space-y-1">
+                  <p><span className="font-medium text-[#172525]">Organisation Reference:</span> #{successData.id}</p>
+                  <p className="text-[#4a5d5c]">Your registration is currently under review. Once approved by an administrator, your organisation access and login credentials will be activated.</p>
                 </div>
               </div>
 
-              <div className="pt-3">
+              <div className="pt-2 max-w-sm mx-auto">
                 <Button
                   onClick={handleClose}
-                  className="w-full h-12 rounded-xl bg-[#06216B] text-white font-bold hover:bg-[#153D9F] transition-colors"
+                  className="w-full h-10 rounded-full bg-[#035352] text-white text-xs font-bold hover:bg-[#023e3d] transition-colors shadow-md shadow-[#035352]/20 cursor-pointer"
                   data-testid="register-success-close-btn"
                 >
                   Done
@@ -196,222 +204,227 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6" data-testid="register-business-form">
+            <form onSubmit={handleSubmit} className="space-y-5" data-testid="register-business-form">
               {error && (
-                <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700">
-                  <AlertCircle className="size-5 shrink-0 text-red-500" />
+                <div className="flex items-center gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700">
+                  <AlertCircle className="size-4 shrink-0 text-red-500" />
                   <span>{error}</span>
                 </div>
               )}
 
-              {/* General Details Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-[#E8EEF7] pb-2 text-sm font-bold text-[#06216B]">
-                  <Building2 className="size-4 text-[#153D9F]" />
-                  <span>Organisation Details</span>
-                </div>
+              {/* 2-Column Responsive Grid */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Column 1: Organisation & Identity */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 border-b border-slate-200/80 pb-1.5 text-xs font-bold uppercase tracking-wider text-[#035352]">
+                    <Building2 className="size-3.5 text-[#05706f]" />
+                    <span>Organisation Details</span>
+                  </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-[#06216B] mb-1.5">
-                    Organisation Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Acme Corporation Pvt Ltd"
-                    required
-                    className="w-full h-11 px-3.5 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                    data-testid="input-org-name"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5 flex items-center gap-1">
-                      <Phone className="size-3.5 text-slate-400" /> Contact Phone
+                    <label className="block text-xs font-semibold text-[#172525] mb-1">
+                      Organisation Name <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="+91 98765 43210"
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-phone"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5 flex items-center gap-1">
-                      <Globe className="size-3.5 text-slate-400" /> Website
-                    </label>
-                    <input
-                      type="url"
-                      name="website"
-                      value={formData.website}
-                      onChange={handleInputChange}
-                      placeholder="https://www.example.com"
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-website"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Address Details Section */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-[#E8EEF7] pb-2 text-sm font-bold text-[#06216B]">
-                  <MapPin className="size-4 text-[#153D9F]" />
-                  <span>Location & Address</span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[#06216B] mb-1.5">
-                    Street Address
-                  </label>
-                  <textarea
-                    name="address"
-                    rows={2}
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    placeholder="Suite 404, Tech Park Towers, Silicon Valley Road"
-                    className="w-full p-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all resize-none"
-                    data-testid="input-org-address"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">City</label>
-                    <input
                       type="text"
-                      name="city"
-                      value={formData.city}
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Mumbai"
-                      className="w-full h-11 px-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-city"
+                      placeholder="e.g. Acme Corporation Pvt Ltd"
+                      required
+                      className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                      data-testid="input-org-name"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">State</label>
-                    <input
-                      type="text"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      placeholder="Maharashtra"
-                      className="w-full h-11 px-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-state"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">Pincode</label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                      placeholder="400001"
-                      className="w-full h-11 px-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-pincode"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">Country</label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      placeholder="India"
-                      className="w-full h-11 px-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="input-org-country"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* Additional Options */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 border-b border-[#E8EEF7] pb-2 text-sm font-bold text-[#06216B]">
-                  <Upload className="size-4 text-[#153D9F]" />
-                  <span>Logo & System Preferences</span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">Organisation Logo</label>
-                    {logoPreview ? (
-                      <div className="relative flex items-center justify-between rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] p-2.5">
-                        <img src={logoPreview} alt="Logo preview" className="size-10 object-contain rounded-lg border border-slate-200 bg-white" />
-                        <span className="text-xs text-slate-600 truncate max-w-[120px]">{logoFile?.name}</span>
-                        <button
-                          type="button"
-                          onClick={removeLogo}
-                          className="flex size-7 items-center justify-center rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
-                        >
-                          <X className="size-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[#B6C9E5] bg-[#F8FAFC] text-xs font-semibold text-[#153D9F] hover:bg-[#EAF2FF] transition-all">
-                        <Upload className="size-4" />
-                        <span>Upload Logo Image</span>
-                        <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" data-testid="input-org-logo" />
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
+                        <Phone className="size-3 text-slate-400" /> Phone
                       </label>
-                    )}
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="+91 98765 43210"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-phone"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
+                        <Globe className="size-3 text-slate-400" /> Website
+                      </label>
+                      <input
+                        type="url"
+                        name="website"
+                        value={formData.website}
+                        onChange={handleInputChange}
+                        placeholder="https://example.com"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-website"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-1">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
+                        <Upload className="size-3 text-slate-400" /> Logo
+                      </label>
+                      {logoPreview ? (
+                        <div className="relative flex h-9 items-center justify-between rounded-full border border-slate-200 bg-[#F4F7F6] px-3">
+                          <img src={logoPreview} alt="Logo" className="size-6 object-contain rounded-full bg-white" />
+                          <span className="text-[11px] text-[#4a5d5c] truncate max-w-[80px]">{logoFile?.name}</span>
+                          <button
+                            type="button"
+                            onClick={removeLogo}
+                            className="flex size-5 items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-dashed border-[#035352]/40 bg-[#e6f0f0]/60 text-[11px] font-bold text-[#035352] hover:bg-[#e6f0f0] transition-all">
+                          <Upload className="size-3" />
+                          <span>Upload Logo</span>
+                          <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" data-testid="input-org-logo" />
+                        </label>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1">Timezone</label>
+                      <select
+                        name="timezone"
+                        value={formData.timezone}
+                        onChange={handleInputChange}
+                        className="w-full h-9 px-3 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="select-org-timezone"
+                      >
+                        <option value="Asia/Kolkata">Asia/Kolkata (+5:30)</option>
+                        <option value="UTC">UTC (GMT)</option>
+                        <option value="America/New_York">New York (EST)</option>
+                        <option value="Europe/London">London (BST)</option>
+                        <option value="Asia/Dubai">Dubai (GST)</option>
+                        <option value="Asia/Singapore">Singapore (SGT)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column 2: Workplace Address */}
+                <div className="space-y-3.5">
+                  <div className="flex items-center gap-2 border-b border-slate-200/80 pb-1.5 text-xs font-bold uppercase tracking-wider text-[#035352]">
+                    <MapPin className="size-3.5 text-[#05706f]" />
+                    <span>Workplace Address</span>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#06216B] mb-1.5">Timezone</label>
-                    <select
-                      name="timezone"
-                      value={formData.timezone}
+                    <label className="block text-xs font-semibold text-[#172525] mb-1">
+                      Street Address
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
                       onChange={handleInputChange}
-                      className="w-full h-11 px-3 rounded-xl border border-[#DCE6F7] bg-[#F8FAFC] text-sm text-[#0F172A] focus:bg-white focus:border-[#153D9F] focus:outline-none focus:ring-2 focus:ring-[#153D9F]/20 transition-all"
-                      data-testid="select-org-timezone"
-                    >
-                      <option value="Asia/Kolkata">Asia/Kolkata (IST +5:30)</option>
-                      <option value="UTC">UTC (Coordinated Universal Time)</option>
-                      <option value="America/New_York">America/New_York (EST)</option>
-                      <option value="Europe/London">Europe/London (GMT/BST)</option>
-                      <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-                      <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
-                    </select>
+                      placeholder="Suite 404, Tech Park Towers, Silicon Valley Road"
+                      className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                      data-testid="input-org-address"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1">City</label>
+                      <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        placeholder="Mumbai"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-city"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1">State</label>
+                      <input
+                        type="text"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        placeholder="Maharashtra"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-state"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1">Pincode</label>
+                      <input
+                        type="text"
+                        name="pincode"
+                        value={formData.pincode}
+                        onChange={handleInputChange}
+                        placeholder="400001"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-pincode"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1">Country</label>
+                      <input
+                        type="text"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        placeholder="India"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-country"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Submit Buttons */}
-              <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-[#E8EEF7]">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleClose}
-                  disabled={loading}
-                  className="w-full sm:w-auto h-12 rounded-xl border-[#DCE6F7] text-[#06216B] font-semibold hover:bg-slate-100"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#06216B] text-white font-bold hover:bg-[#153D9F] transition-all shadow-lg shadow-[#06216B]/15 flex items-center justify-center gap-2"
-                  data-testid="submit-register-business-btn"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" /> Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="size-4" /> Register Business
-                    </>
-                  )}
-                </Button>
+              {/* Submit Action Bar */}
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200/80">
+                <p className="text-[11px] text-[#718786]">
+                  By submitting, you agree to Digi-Gate's workplace terms & privacy policy.
+                </p>
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    disabled={loading}
+                    className="w-full sm:w-auto h-9 px-5 rounded-full border border-slate-300 text-xs font-semibold text-[#172525] hover:bg-slate-100 cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full sm:w-auto h-9 px-6 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] transition-all shadow-md shadow-[#035352]/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                    data-testid="submit-register-business-btn"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="size-3.5 animate-spin" /> Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="size-3.5" /> Register Business
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           )}

@@ -336,7 +336,7 @@ export default function VisitorFormPage() {
                     {state.tab > 0 && (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab - 1))}
-                        className="flex-1 py-3 rounded-2xl font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                        className="flex-1 py-3 rounded-full font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                       >
                         <ArrowLeft className="w-4 h-4" />
                         <span>Back</span>
@@ -346,7 +346,7 @@ export default function VisitorFormPage() {
                     {state.tab < 2 ? (
                       <button
                         onClick={() => dispatch(actions.setTab(state.tab + 1))}
-                        className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
+                        className="flex-1 py-3 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
                       >
                         <span>Next Step</span>
                         <ArrowRight className="w-4 h-4" />
@@ -356,7 +356,7 @@ export default function VisitorFormPage() {
                         <button
                           onClick={handleSubmit}
                           disabled={state.loading}
-                          className="flex-1 py-3 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs disabled:opacity-50 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                          className="flex-1 py-3 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs disabled:opacity-50 uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                         >
                           {state.loading ? 'Submitting Registration...' : 'Complete Check-In Pass'}
                         </button>

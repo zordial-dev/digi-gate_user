@@ -85,7 +85,7 @@ export default function MobileStep() {
       <button 
         onClick={handleSubmit} 
         disabled={loading || state.mobile.length !== 10}
-        className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider"
+        className="w-full py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
       >
         <span>{loading ? 'Sending Verification Code...' : 'Send Verification OTP'}</span>
         <ArrowRight className="w-4 h-4" />

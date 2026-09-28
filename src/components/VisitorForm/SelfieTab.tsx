@@ -139,7 +139,7 @@ export default function SelfieTab() {
           <button
             onClick={captureSelfie}
             disabled={!isCameraReady}
-            className="w-full py-3.5 rounded-2xl font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider disabled:opacity-50"
+            className="w-full py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider disabled:opacity-50 cursor-pointer"
           >
             <Camera className="w-4 h-4" />
             <span>Capture Selfie Photo</span>
@@ -168,7 +168,7 @@ export default function SelfieTab() {
 
           <button
             onClick={handleRetake}
-            className="px-5 py-2.5 rounded-2xl font-bold text-xs border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm inline-flex items-center gap-1.5"
+            className="px-6 py-2.5 rounded-full font-bold text-xs border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
           >
             <RotateCcw className="w-4 h-4 text-slate-500" />
             <span>Retake Photo</span>

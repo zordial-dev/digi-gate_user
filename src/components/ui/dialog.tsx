@@ -3,16 +3,16 @@ import * as React from "react";
 export function Dialog({ open, onOpenChange, children }: { open: boolean; onOpenChange: (open: boolean) => void; children: React.ReactNode }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
-      <div className="relative z-50 w-full max-w-md">{children}</div>
+      <div className="relative z-50 w-full flex items-center justify-center">{children}</div>
     </div>
   );
 }
 
 export function DialogContent({ className = "", children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`relative bg-white shadow-2xl rounded-2xl overflow-hidden ${className}`} {...props}>
+    <div className={`relative w-full bg-white shadow-2xl overflow-hidden rounded-[2rem] ${className}`} {...props}>
       {children}
     </div>
   );
