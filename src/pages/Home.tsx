@@ -173,10 +173,10 @@ function ConceptualArrivalVisual() {
     <div className="relative mx-auto aspect-[0.96] w-full max-w-[600px]" data-testid="hero-conceptual-visual">
       {/* Background Glows */}
       <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-[#035352]/20 via-[#05706f]/15 to-[#F3E8BC]/25 blur-3xl -z-10" />
-      
+
       {/* Main Terminal Frame */}
       <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-[#023e3d] via-[#035352] to-[#012524] p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(3,83,82,0.35)]">
-        
+
         {/* Terminal Header Bar */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-2.5">
@@ -407,7 +407,7 @@ function ConceptualProductPreview() {
           </div>
         </div>
       </div>
-      
+
       <div className="absolute -bottom-4 -left-4 hidden sm:block rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xl shadow-[#035352]/10" data-testid="product-preview-concept-label">
         <p className="font-mono text-[9px] uppercase tracking-widest text-[#05706f] font-bold">Digi-Gate Platform</p>
         <p className="mt-0.5 text-xs font-extrabold text-[#035352]">Streamlined Workplace Arrival</p>
@@ -468,7 +468,7 @@ export default function Home() {
         <section className="relative isolate overflow-hidden bg-[#F4F7F6] pt-32 sm:pt-40 lg:pt-44" data-testid="hero-section">
           {/* Subtle modern mesh ambient lights */}
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_14%,rgba(5,112,111,.14),transparent_35%),radial-gradient(circle_at_12%_25%,rgba(3,83,82,.08),transparent_30%)]" />
-          
+
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 sm:px-6 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:px-8 lg:pb-28">
             <Reveal className="relative z-10 max-w-2xl">
               {/* Product Badge Pill */}
@@ -480,11 +480,11 @@ export default function Home() {
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-[4.25rem] font-extrabold leading-[1.18] sm:leading-[1.12] tracking-tight text-[#172525]" data-testid="hero-headline">
                 A smarter way to manage <span className="bg-gradient-to-r from-[#035352] via-[#05706f] to-[#023e3d] bg-clip-text text-transparent underline decoration-[#F3E8BC] decoration-4 underline-offset-8">every visitor</span>.
               </h1>
-              
+
               <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-[#4a5d5c]" data-testid="hero-supporting-text">
                 Digi-Gate replaces traditional paper registers with contactless QR check-ins, instant host alerts, and verified digital gate passes for modern organisations.
               </p>
-              
+
               <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
                 <Button onClick={() => navigate("/register")} size="lg" className="h-12 rounded-full bg-[#035352] hover:bg-[#023e3d] px-8 text-sm font-bold text-white shadow-lg shadow-[#035352]/20 hover:-translate-y-0.5 flex items-center justify-center gap-2.5 transition-all cursor-pointer" data-testid="hero-cta-register-business">
                   <Building2 className="size-4 text-[#F3E8BC]" /> Register Business
@@ -818,7 +818,7 @@ export default function Home() {
                   <h2 className="mx-auto mt-6 max-w-3xl font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="final-cta-heading">Ready to modernise your visitor experience?</h2>
                   <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-teal-100/80 sm:text-lg" data-testid="final-cta-copy">See how Digi-Gate can help your organisation create a smarter, more professional way to manage visitors.</p>
                   <div className="mt-9 flex flex-col sm:flex-row justify-center gap-4">
-                    <Button onClick={() => navigate("/register")} size="lg" className="h-13 rounded-full bg-white px-8 font-bold text-[#035352] hover:-translate-y-1 hover:bg-[#F3E8BC] flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer" data-testid="final-cta-scan-qr">
+                    <Button onClick={() => navigate("/register")} size="lg" className="h-16 rounded-full bg-white px-8 font-bold text-[#035352] hover:-translate-y-1 hover:bg-[#F3E8BC] flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer" data-testid="final-cta-scan-qr">
                       <Building2 className="size-5 text-[#035352]" /> Register Your Organisation
                     </Button>
                   </div>
@@ -866,7 +866,7 @@ export default function Home() {
               <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#022928] via-[#035352] to-[#011f1e] p-8 sm:p-14 text-white shadow-2xl shadow-[#035352]/20 border border-white/10">
                 <div className="absolute -right-20 -top-20 size-80 rounded-full bg-[#05706f]/30 blur-3xl pointer-events-none" />
                 <div className="absolute -left-20 -bottom-20 size-80 rounded-full bg-[#F3E8BC]/10 blur-3xl pointer-events-none" />
-                
+
                 <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-2xl">
                     <Badge className="border-[#F3E8BC]/30 bg-[#F3E8BC]/15 text-[#F3E8BC] mb-4" data-testid="register-section-badge">
