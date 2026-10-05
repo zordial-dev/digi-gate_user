@@ -34,7 +34,23 @@ export default function VisitTab() {
   }, [orgId, state.org]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    dispatch(actions.setForm({ [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    dispatch(actions.setForm({ [name]: value }));
+    if (state.errors[name]) {
+      const nextErrors = { ...state.errors };
+      delete nextErrors[name];
+      dispatch(actions.setErrors(nextErrors));
+    }
+  };
+
+  const handleHostChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    dispatch(actions.setHostId(value));
+    if (state.errors.host) {
+      const nextErrors = { ...state.errors };
+      delete nextErrors.host;
+      dispatch(actions.setErrors(nextErrors));
+    }
   };
 
   const todayStr = new Date().toISOString().split('T')[0];
@@ -66,7 +82,7 @@ export default function VisitTab() {
             </div>
             <select
               value={state.hostId}
-              onChange={(e) => dispatch(actions.setHostId(e.target.value))}
+              onChange={handleHostChange}
               className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-xl outline-none text-xs font-bold text-slate-800 appearance-none transition-all shadow-sm ${
                 state.errors.host 
                   ? 'border-rose-500 focus:ring-2 focus:ring-rose-500/20' 

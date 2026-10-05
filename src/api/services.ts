@@ -15,6 +15,18 @@ export const organisationApi = {
         },
       }
     ),
+
+  sendVerificationOtp: (email: string) =>
+    apiClient.post<{ success: boolean; message: string; email: string; devOtp?: string; error?: string }>(
+      '/organisations/send-verification-otp',
+      { email }
+    ),
+
+  verifyRegistrationOtp: (email: string, otp: string) =>
+    apiClient.post<{ success: boolean; message: string; error?: string }>(
+      '/organisations/verify-registration-otp',
+      { email, otp }
+    ),
 };
 
 export const visitorApi = {

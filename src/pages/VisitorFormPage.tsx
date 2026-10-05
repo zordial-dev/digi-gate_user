@@ -66,37 +66,121 @@ export default function VisitorFormPage() {
     fetchOrg();
   }, [orgId, dispatch]);
 
+  // Step-by-Step Field-Based Validation
+  const validatePersonalStep = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!state.form.full_name || !state.form.full_name.trim()) {
+      errors.full_name = 'Full Name is required';
+    } else if (state.form.full_name.trim().length < 2) {
+      errors.full_name = 'Full Name must be at least 2 characters';
+    }
+
+    if (!state.form.designation || !state.form.designation.trim()) {
+      errors.designation = 'Designation is required';
+    }
+
+    if (!state.form.company || !state.form.company.trim()) {
+      errors.company = 'Company / Association is required';
+    }
+
+    if (state.form.email && state.form.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(state.form.email.trim())) {
+        errors.email = 'Please enter a valid email address';
+      }
+    }
+
+    dispatch(actions.setErrors(errors));
+
+    if (Object.keys(errors).length > 0) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Please complete all required personal details before proceeding' }));
+      return false;
+    }
+
+    dispatch(actions.setMsg(null));
+    return true;
+  };
+
+  const validateVisitStep = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!state.hostId) {
+      errors.host = 'Please select a host person';
+    }
+
+    if (!state.form.purpose_of_visit || !state.form.purpose_of_visit.trim()) {
+      errors.purpose_of_visit = 'Purpose of visit is required';
+    } else if (state.form.purpose_of_visit.trim().length < 5) {
+      errors.purpose_of_visit = 'Purpose of visit must be at least 5 characters';
+    }
+
+    dispatch(actions.setErrors(errors));
+
+    if (Object.keys(errors).length > 0) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Please complete visit and host details before proceeding' }));
+      return false;
+    }
+
+    dispatch(actions.setMsg(null));
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (state.tab === 0) {
+      if (!validatePersonalStep()) return;
+      dispatch(actions.setTab(1));
+    } else if (state.tab === 1) {
+      if (!validateVisitStep()) return;
+      dispatch(actions.setTab(2));
+    }
+  };
+
+  const handleTabClick = (targetTab: number) => {
+    if (targetTab <= state.tab) {
+      dispatch(actions.setTab(targetTab));
+      dispatch(actions.setMsg(null));
+      return;
+    }
+
+    if (state.tab === 0) {
+      if (!validatePersonalStep()) return;
+      if (targetTab === 2) {
+        if (!validateVisitStep()) {
+          dispatch(actions.setTab(1));
+          return;
+        }
+      }
+    } else if (state.tab === 1) {
+      if (!validateVisitStep()) return;
+    }
+
+    dispatch(actions.setTab(targetTab));
+  };
+
   const handleSubmit = async () => {
     if (!state.org) {
       dispatch(actions.setMsg({ type: 'error', text: 'Invalid organisation. Cannot submit registration.' }));
       return;
     }
 
-    // 1. Validate Selfie
+    // 1. Validate Personal Profile Fields
+    if (!validatePersonalStep()) {
+      dispatch(actions.setTab(0));
+      return;
+    }
+
+    // 2. Validate Host Selection and Visit Purpose
+    if (!validateVisitStep()) {
+      dispatch(actions.setTab(1));
+      return;
+    }
+
+    // 3. Validate Selfie
     const selfieFile = selfieStore.file;
     if (!selfieFile) {
       dispatch(actions.setMsg({ type: 'error', text: 'Please capture a selfie photo to complete registration' }));
-      return;
-    }
-
-    // 2. Validate Host Selection
-    if (!state.hostId) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please select a Host person for your visit' }));
-      dispatch(actions.setTab(1));
-      return;
-    }
-
-    // 3. Validate Purpose of Visit
-    if (!state.form.purpose_of_visit || state.form.purpose_of_visit.trim().length < 5) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please enter a Purpose of Visit (at least 5 characters)' }));
-      dispatch(actions.setTab(1));
-      return;
-    }
-
-    // 4. Validate Personal Profile Fields
-    if (!state.form.full_name?.trim() || !state.form.company?.trim()) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please complete your Full Name and Company details' }));
-      dispatch(actions.setTab(0));
+      dispatch(actions.setTab(2));
       return;
     }
 
@@ -312,7 +396,7 @@ export default function VisitorFormPage() {
                     return (
                       <button
                         key={i}
-                        onClick={() => dispatch(actions.setTab(i))}
+                        onClick={() => handleTabClick(i)}
                         className={`flex-1 py-3 px-1.5 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${state.tab === i
                           ? 'bg-[#035352] text-[#F3E8BC] shadow-md shadow-[#035352]/20'
                           : 'text-slate-500 hover:text-[#035352]'
@@ -345,7 +429,7 @@ export default function VisitorFormPage() {
 
                     {state.tab < 2 ? (
                       <button
-                        onClick={() => dispatch(actions.setTab(state.tab + 1))}
+                        onClick={handleNextStep}
                         className="flex-1 py-3 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all text-xs flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
                       >
                         <span>Next Step</span>

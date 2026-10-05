@@ -8,7 +8,13 @@ export default function PersonalTab() {
   const state = useSelector((state: RootState) => state.visitor);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(actions.setForm({ [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    dispatch(actions.setForm({ [name]: value }));
+    if (state.errors[name]) {
+      const nextErrors = { ...state.errors };
+      delete nextErrors[name];
+      dispatch(actions.setErrors(nextErrors));
+    }
   };
 
   const fields = [
