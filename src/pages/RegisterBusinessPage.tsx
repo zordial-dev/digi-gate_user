@@ -59,7 +59,6 @@ export default function RegisterBusinessPage() {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
-  const [emailServiceOutput, setEmailServiceOutput] = useState<any>(null);
 
   // Password visibility
   const [showPassword, setShowPassword] = useState(false);
@@ -115,7 +114,6 @@ export default function RegisterBusinessPage() {
   const handleSendOtp = async () => {
     setError(null);
     setOtpMessage(null);
-    setEmailServiceOutput(null);
 
     const cleanEmail = formData.email.trim();
     if (!cleanEmail) {
@@ -134,26 +132,15 @@ export default function RegisterBusinessPage() {
       if (res.data && res.data.success) {
         setOtpSent(true);
         setOtpMessage(`Verification code sent to ${cleanEmail}. Please check your inbox.`);
-        if (res.data.emailServiceOutput) {
-          setEmailServiceOutput(res.data.emailServiceOutput);
-        }
       } else {
-        const errorMsg = res.data?.error || "Email was not sent. Please verify your email configuration.";
-        setError(errorMsg);
+        setError(res.data?.error || "Mail was not sent.");
         setOtpSent(false);
-        if (res.data?.emailServiceOutput) {
-          setEmailServiceOutput(res.data.emailServiceOutput);
-        }
       }
     } catch (err: any) {
       console.error("Send OTP error:", err);
-      const serverData = err.response?.data;
-      const errorMsg = serverData?.error || err.message || "Email was not sent. Failed to deliver verification code.";
-      setError(errorMsg);
+      const serverError = err.response?.data?.error;
+      setError(serverError || "Mail was not sent.");
       setOtpSent(false);
-      if (serverData?.emailServiceOutput) {
-        setEmailServiceOutput(serverData.emailServiceOutput);
-      }
     } finally {
       setIsSendingOtp(false);
     }
@@ -711,7 +698,6 @@ export default function RegisterBusinessPage() {
                           setEmailVerified(false);
                           setOtpSent(false);
                           setOtpCode("");
-                          setEmailServiceOutput(null);
                         }}
                         disabled={emailVerified}
                         placeholder="admin@yourcompany.com"
@@ -743,48 +729,19 @@ export default function RegisterBusinessPage() {
                     </div>
                   </div>
 
-                  {/* Email Delivery Error Banner */}
+                  {/* Email Delivery Simple Error Banner */}
                   {error && (
-                    <div className="rounded-2xl border border-red-200 bg-red-50/90 p-4 text-xs space-y-2 animate-in fade-in duration-200 shadow-sm">
-                      <div className="flex items-center gap-2 font-bold text-red-800">
-                        <AlertCircle className="size-4 shrink-0 text-red-600" />
-                        <span>Email was not sent</span>
-                      </div>
-                      <p className="text-red-700 leading-relaxed font-medium">
-                        {error}
-                      </p>
-                      {emailServiceOutput && (
-                        <div className="mt-2 pt-2 border-t border-red-200/60">
-                          <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider mb-1">
-                            Email Service Output:
-                          </p>
-                          <pre className="text-[11px] font-mono bg-white/90 p-2.5 rounded-xl border border-red-200 text-red-950 overflow-x-auto whitespace-pre-wrap break-all">
-                            {typeof emailServiceOutput === "string"
-                              ? emailServiceOutput
-                              : JSON.stringify(emailServiceOutput, null, 2)}
-                          </pre>
-                        </div>
-                      )}
+                    <div className="flex items-center gap-2.5 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-semibold text-red-700 animate-in fade-in duration-200 shadow-sm">
+                      <AlertCircle className="size-4 shrink-0 text-red-500" />
+                      <span>{error}</span>
                     </div>
                   )}
 
-                  {/* OTP Message Banner & Success Output */}
+                  {/* OTP Message Banner */}
                   {otpMessage && (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2.5 rounded-2xl border border-teal-200 bg-teal-50/80 p-3.5 text-xs font-medium text-teal-800 animate-in fade-in duration-200">
-                        <CheckCircle2 className="size-4 shrink-0 text-teal-600" />
-                        <span>{otpMessage}</span>
-                      </div>
-                      {emailServiceOutput && (
-                        <details className="text-[11px] bg-slate-50 border border-slate-200 rounded-xl p-2.5">
-                          <summary className="text-[10px] font-bold text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-800 select-none">
-                            View Email Service Output
-                          </summary>
-                          <pre className="mt-2 font-mono text-[10px] bg-white p-2 rounded-lg border border-slate-200 overflow-x-auto text-slate-800 whitespace-pre-wrap break-all">
-                            {JSON.stringify(emailServiceOutput, null, 2)}
-                          </pre>
-                        </details>
-                      )}
+                    <div className="flex items-center gap-2.5 rounded-2xl border border-teal-200 bg-teal-50/80 p-3.5 text-xs font-medium text-teal-800 animate-in fade-in duration-200">
+                      <CheckCircle2 className="size-4 shrink-0 text-teal-600" />
+                      <span>{otpMessage}</span>
                     </div>
                   )}
 
