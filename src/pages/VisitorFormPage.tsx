@@ -322,7 +322,7 @@ export default function VisitorFormPage() {
   } else if (state.step === 'mobile') {
     brandingSubtitle = 'Enter your mobile number to check in';
   } else if (state.step === 'otp') {
-    brandingSubtitle = `Enter 4-digit OTP code sent to +91 ${state.mobile}`;
+    brandingSubtitle = `Enter 6-digit OTP code sent to +91 ${state.mobile}`;
   } else if (state.step === 'form') {
     brandingSubtitle = 'Complete your profile to generate gate pass';
     showWelcomeBack = state.isReturning;

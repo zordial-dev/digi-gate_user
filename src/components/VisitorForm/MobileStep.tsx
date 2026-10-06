@@ -10,13 +10,26 @@ export default function MobileStep() {
   const state = useSelector((state: RootState) => state.visitor);
   const [loading, setLoading] = useState(false);
 
+  const isValidMobile = state.mobile.length === 10 && /^[6-9]/.test(state.mobile);
+  const showFirstDigitError = state.mobile.length >= 1 && !/^[6-9]/.test(state.mobile);
+
   const handleSubmit = async () => {
-    if (!state.mobile || state.mobile.length !== 10) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please enter a valid 10-digit mobile number' }));
+    if (!isValidMobile) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9' }));
       return;
     }
     setLoading(true);
+    dispatch(actions.setMsg(null));
     try {
+      // 1. Send real SMS OTP first
+      const otpRes = await visitorApi.sendOtp(state.mobile);
+      if (!otpRes.data.success) {
+        dispatch(actions.setMsg({ type: 'error', text: otpRes.data.error || 'Failed to send OTP' }));
+        setLoading(false);
+        return;
+      }
+
+      // 2. Check if returning visitor (pre-fill form data)
       const orgIdToUse = state.org?.id || 1;
       const res = await visitorApi.check(state.mobile, orgIdToUse);
       const result = res.data;
@@ -38,11 +51,14 @@ export default function MobileStep() {
         dispatch(actions.setIsReturning(false));
         dispatch(actions.setVisitorId(null));
         dispatch(actions.setForm({ mobile_number: state.mobile }));
-        dispatch(actions.setMsg({ type: 'success', text: 'Enter verification OTP code sent to your mobile' }));
       }
+
+      dispatch(actions.setOtpTimer(60));
+      dispatch(actions.setMsg({ type: 'success', text: 'Verification code sent to your mobile number' }));
       dispatch(actions.setStep('otp'));
-    } catch {
-      dispatch(actions.setMsg({ type: 'error', text: 'Network connection error' }));
+    } catch (error: any) {
+      const errMsg = error.response?.data?.error || 'Failed to send OTP. Please try again.';
+      dispatch(actions.setMsg({ type: 'error', text: errMsg }));
     }
     setLoading(false);
   };
@@ -75,8 +91,12 @@ export default function MobileStep() {
           />
         </div>
         <div className="mt-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-400">
-          <span>Standard 10-digit mobile number</span>
-          <span className={state.mobile.length === 10 ? 'text-[#035352] font-bold' : ''}>
+          {showFirstDigitError ? (
+            <span className="text-rose-500">Number must start with 6, 7, 8 or 9</span>
+          ) : (
+            <span>Standard 10-digit Indian mobile number</span>
+          )}
+          <span className={isValidMobile ? 'text-[#035352] font-bold' : showFirstDigitError ? 'text-rose-500' : ''}>
             {state.mobile.length}/10 digits
           </span>
         </div>
@@ -84,7 +104,7 @@ export default function MobileStep() {
 
       <button 
         onClick={handleSubmit} 
-        disabled={loading || state.mobile.length !== 10}
+        disabled={loading || !isValidMobile}
         className="w-full py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
       >
         <span>{loading ? 'Sending Verification Code...' : 'Send Verification OTP'}</span>

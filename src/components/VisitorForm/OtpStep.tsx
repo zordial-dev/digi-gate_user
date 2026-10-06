@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
+import { visitorApi } from '@/api/services';
 import { Shield, ArrowRight, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
 
 export default function OtpStep() {
   const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state.visitor);
+  const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     if (state.otpTimer > 0) {
@@ -15,17 +18,45 @@ export default function OtpStep() {
     }
   }, [state.otpTimer, dispatch]);
 
-  const handleVerify = () => {
-    if (!state.otp || state.otp.length !== 4) {
-      dispatch(actions.setMsg({ type: 'error', text: 'Please enter valid 4-digit OTP code' }));
+  const handleVerify = async () => {
+    if (!state.otp || state.otp.length !== 6) {
+      dispatch(actions.setMsg({ type: 'error', text: 'Please enter the 6-digit OTP code sent to your mobile' }));
       return;
     }
-    if (state.otp === '1234') {
-      dispatch(actions.setMsg({ type: 'success', text: 'OTP code verified successfully!' }));
-      dispatch(actions.setStep('form'));
-    } else {
-      dispatch(actions.setMsg({ type: 'error', text: 'Invalid OTP code. Please enter 1234' }));
+    setVerifying(true);
+    dispatch(actions.setMsg(null));
+    try {
+      const res = await visitorApi.verifyOtp(state.mobile, state.otp);
+      if (res.data.success) {
+        dispatch(actions.setMsg({ type: 'success', text: 'Mobile verified successfully!' }));
+        dispatch(actions.setStep('form'));
+      } else {
+        dispatch(actions.setMsg({ type: 'error', text: res.data.error || 'Invalid OTP code. Please try again.' }));
+      }
+    } catch (error: any) {
+      const errMsg = error.response?.data?.error || 'Verification failed. Please try again.';
+      dispatch(actions.setMsg({ type: 'error', text: errMsg }));
     }
+    setVerifying(false);
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    dispatch(actions.setMsg(null));
+    try {
+      const res = await visitorApi.sendOtp(state.mobile);
+      if (res.data.success) {
+        dispatch(actions.setOtpTimer(60));
+        dispatch(actions.setOtp(''));
+        dispatch(actions.setMsg({ type: 'success', text: 'New OTP sent to your mobile number' }));
+      } else {
+        dispatch(actions.setMsg({ type: 'error', text: res.data.error || 'Failed to resend OTP' }));
+      }
+    } catch (error: any) {
+      const errMsg = error.response?.data?.error || 'Failed to resend OTP. Please try again.';
+      dispatch(actions.setMsg({ type: 'error', text: errMsg }));
+    }
+    setResending(false);
   };
 
   return (
@@ -41,6 +72,7 @@ export default function OtpStep() {
             onClick={() => {
               dispatch(actions.setStep('mobile'));
               dispatch(actions.setMsg(null));
+              dispatch(actions.setOtp(''));
             }}
             className="text-[#035352] font-extrabold hover:underline ml-1"
           >
@@ -51,24 +83,24 @@ export default function OtpStep() {
 
       <div>
         <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-1.5 text-center">
-          4-Digit OTP Code *
+          6-Digit OTP Code *
         </label>
         <input
           type="text"
           value={state.otp}
           onChange={(e) => dispatch(actions.setOtp(e.target.value.replace(/\D/g, '')))}
-          maxLength={4}
-          placeholder="1234"
+          maxLength={6}
+          placeholder="••••••"
           className="w-full px-4 py-3 border border-slate-300 rounded-2xl outline-none text-center text-xl font-mono font-extrabold text-slate-800 placeholder-slate-300 tracking-[8px] focus:border-[#035352] focus:ring-2 focus:ring-[#035352]/20 transition-all shadow-sm"
         />
         <div className="mt-1.5 text-center text-[11px] font-semibold text-slate-400">
-          {state.otp.length}/4 digits entered
+          {state.otp.length}/6 digits entered
         </div>
       </div>
 
       <div className="p-3.5 rounded-2xl bg-[#035352]/5 border border-[#035352]/20 text-xs font-bold text-[#035352] flex items-center gap-2">
         <Shield className="w-4 h-4 shrink-0 text-[#035352]" />
-        <span>Use static OTP code <strong>1234</strong> for verification.</span>
+        <span>Enter the OTP code sent via SMS to your mobile number.</span>
       </div>
 
       <div className="flex gap-3">
@@ -76,6 +108,7 @@ export default function OtpStep() {
           onClick={() => {
             dispatch(actions.setStep('mobile'));
             dispatch(actions.setMsg(null));
+            dispatch(actions.setOtp(''));
           }}
           className="flex-1 py-3.5 rounded-full font-bold border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-all text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
         >
@@ -84,25 +117,28 @@ export default function OtpStep() {
         </button>
         <button 
           onClick={handleVerify}
-          disabled={state.otp.length !== 4}
+          disabled={state.otp.length !== 6 || verifying}
           className="flex-1 py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
         >
-          <span>Verify OTP</span>
+          <span>{verifying ? 'Verifying...' : 'Verify OTP'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
 
       <div className="text-center pt-1">
         <button
-          onClick={() => {
-            dispatch(actions.setOtpTimer(60));
-            dispatch(actions.setMsg({ type: 'success', text: 'OTP code resent successfully!' }));
-          }}
-          disabled={state.otpTimer > 0}
+          onClick={handleResend}
+          disabled={state.otpTimer > 0 || resending}
           className="text-xs font-bold text-[#035352] hover:underline disabled:opacity-50 disabled:no-underline inline-flex items-center gap-1.5"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>{state.otpTimer > 0 ? `Resend Code in ${state.otpTimer}s` : 'Resend Verification Code'}</span>
+          <RefreshCw className={`w-3.5 h-3.5 ${resending ? 'animate-spin' : ''}`} />
+          <span>
+            {resending
+              ? 'Sending...'
+              : state.otpTimer > 0
+                ? `Resend Code in ${state.otpTimer}s`
+                : 'Resend Verification Code'}
+          </span>
         </button>
       </div>
     </div>

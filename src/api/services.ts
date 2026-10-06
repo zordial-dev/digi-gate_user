@@ -38,6 +38,18 @@ export const visitorApi = {
       lastVisit?: VisitorVisit;
     }>(`/visitors/check?mobile_number=${mobile_number}&organisation_id=${organisation_id}`),
 
+  sendOtp: (mobile_number: string) =>
+    apiClient.post<{ success: boolean; message: string; error?: string }>(
+      '/visitors/send-otp',
+      { mobile_number }
+    ),
+
+  verifyOtp: (mobile_number: string, otp: string) =>
+    apiClient.post<{ success: boolean; message: string; error?: string }>(
+      '/visitors/verify-otp',
+      { mobile_number, otp }
+    ),
+
   create: (data: Partial<VisitorFormData & { organisation_id: number }>) =>
     apiClient.post<{ success: boolean; data: Visitor; error?: string }>('/visitors', data),
 };
