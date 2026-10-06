@@ -17,7 +17,14 @@ export const organisationApi = {
     ),
 
   sendVerificationOtp: (email: string) =>
-    apiClient.post<{ success: boolean; message: string; email: string; devOtp?: string; error?: string }>(
+    apiClient.post<{
+      success: boolean;
+      message: string;
+      email: string;
+      emailServiceOutput?: any;
+      devOtp?: string;
+      error?: string;
+    }>(
       '/organisations/send-verification-otp',
       { email }
     ),
