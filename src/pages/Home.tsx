@@ -25,7 +25,6 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 type IconComponent = any;
@@ -88,12 +87,19 @@ const howSteps: { step: string; title: string; copy: string; icon: IconComponent
 function LogoMark({ light = false, testId }: { light?: boolean; testId: string }) {
   return (
     <span className="flex items-center gap-2.5" data-testid={testId}>
-      <span className={`relative flex size-9 items-center justify-center rounded-xl shadow-sm ${light ? "bg-white/10 ring-1 ring-white/15" : "bg-[#035352]"}`}>
-        <span className="absolute left-[9px] top-[8px] h-3 w-3 rounded-[4px] bg-[#F3E8BC]" />
-        <span className="absolute bottom-[8px] right-[8px] h-3 w-3 rounded-[4px] bg-white" />
-        <span className="absolute left-[15px] top-[15px] h-[9px] w-[9px] rounded-[3px] bg-[#05706f]" />
-      </span>
-      <span className={`font-heading text-[1.2rem] font-extrabold tracking-[-0.04em] ${light ? "text-white" : "text-[#035352]"}`}>Digi-Gate</span>
+      <img
+        src="/digigate_logo.png"
+        alt="DigiGate Logo"
+        className="h-9 sm:h-10 w-auto object-contain rounded-md"
+      />
+      <div className="flex flex-col text-left">
+        <span className={`font-heading text-lg sm:text-xl font-black tracking-tight leading-none ${light ? "text-white" : "text-[#035352]"}`}>
+          Digi<span className={light ? "text-[#F3E8BC]" : "text-[#05706f]"}>-Gate</span>
+        </span>
+        <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest leading-none mt-1 ${light ? "text-teal-200" : "text-[#035352]/70"}`}>
+          Visitor System
+        </span>
+      </div>
     </span>
   );
 }
@@ -102,8 +108,8 @@ function Reveal({
   children,
   className = "",
   delay = 0,
-  y = 35,
-  duration = 0.7,
+  y = 25,
+  duration = 0.5,
 }: {
   children: ReactNode;
   className?: string;
@@ -112,14 +118,14 @@ function Reveal({
   duration?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "0px 0px -60px 0px" });
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -40px 0px" });
 
   return (
     <div ref={ref} className={`h-full ${className}`}>
       <motion.div
-        className="h-full flex flex-col"
-        initial={{ opacity: 0, y, filter: "blur(4px)" }}
-        animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y, filter: "blur(4px)" }}
+        className="h-full flex flex-col gpu-layer"
+        initial={{ opacity: 0, y }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
         transition={{ duration, delay: isInView ? delay : 0, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
@@ -131,25 +137,25 @@ function Reveal({
 function SectionIntro({ eyebrow, title, copy }: { eyebrow: string; title: string; copy?: string }) {
   const id = eyebrow.toLowerCase().replaceAll(" ", "-");
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "0px 0px -60px 0px" });
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -40px 0px" });
 
   return (
-    <div ref={ref} className="max-w-2xl">
+    <div ref={ref} className="max-w-2xl gpu-layer">
       <motion.p
         className="eyebrow"
         data-testid={`section-eyebrow-${id}`}
-        initial={{ opacity: 0, y: 15 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
         {eyebrow}
       </motion.p>
       <motion.h2
         className="mt-4 font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-[#172525]"
         data-testid={`section-heading-${id}`}
-        initial={{ opacity: 0, y: 28, filter: "blur(3px)" }}
-        animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 28, filter: "blur(3px)" }}
-        transition={{ duration: 0.7, delay: isInView ? 0.08 : 0, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.5, delay: isInView ? 0.05 : 0, ease: [0.22, 1, 0.36, 1] }}
       >
         {title}
       </motion.h2>
@@ -157,9 +163,9 @@ function SectionIntro({ eyebrow, title, copy }: { eyebrow: string; title: string
         <motion.p
           className="mt-5 max-w-2xl text-base leading-8 text-[#4a5d5c] sm:text-lg"
           data-testid={`section-copy-${id}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: isInView ? 0.16 : 0, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+          transition={{ duration: 0.5, delay: isInView ? 0.1 : 0, ease: [0.22, 1, 0.36, 1] }}
         >
           {copy}
         </motion.p>
@@ -433,8 +439,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F4F7F6] text-[#172525]" data-testid="digi-gate-marketing-site">
-      <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${scrolled ? "border-b border-slate-200/90 bg-white/95 shadow-[0_10px_40px_rgba(3,83,82,.08)] backdrop-blur-xl" : "bg-transparent"}`} data-testid="nav-bar">
-        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className={`fixed inset-x-0 top-0 z-50 bg-white border-b border-slate-200/90 transition-shadow duration-300 gpu-layer ${scrolled ? "shadow-md shadow-[#035352]/10" : "shadow-sm"}`} data-testid="nav-bar">
+        <div className="mx-auto flex h-[68px] sm:h-[76px] max-w-7xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
           <a href="#top" aria-label="Digi-Gate home" data-testid="nav-brand-link"><LogoMark testId="brand-logo-header" /></a>
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation" data-testid="desktop-navigation">
             {navItems.map(([label, href, testId]) => <a key={href} href={href} className="text-sm font-semibold text-[#4a5d5c] hover:text-[#035352] transition-colors" data-testid={testId}>{label}</a>)}
@@ -444,7 +450,7 @@ export default function Home() {
               <Building2 className="size-4 text-[#F3E8BC]" /> Register Business
             </Button>
           </div>
-          <button className="flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-white/80 text-[#035352] lg:hidden cursor-pointer" onClick={() => setMobileMenuOpen((current) => !current)} aria-label="Toggle navigation" data-testid="mobile-menu-toggle-button">
+          <button className="flex size-10 items-center justify-center rounded-xl bg-[#035352] text-white shadow-sm hover:bg-[#023e3d] active:scale-95 transition-all lg:hidden cursor-pointer" onClick={() => setMobileMenuOpen((current) => !current)} aria-label="Toggle navigation" data-testid="mobile-menu-toggle-button">
             {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -471,12 +477,6 @@ export default function Home() {
 
           <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 sm:px-6 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:px-8 lg:pb-28">
             <Reveal className="relative z-10 max-w-2xl">
-              {/* Product Badge Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#035352]/20 bg-[#e6f0f0]/90 px-3.5 py-1 text-xs font-bold text-[#035352] shadow-sm mb-6 backdrop-blur-sm">
-                <Sparkles className="size-3.5 text-[#05706f]" />
-                <span>Next-Gen Visitor Management & Gate Pass System</span>
-              </div>
-
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-[4.25rem] font-extrabold leading-[1.18] sm:leading-[1.12] tracking-tight text-[#172525]" data-testid="hero-headline">
                 A smarter way to manage <span className="bg-gradient-to-r from-[#035352] via-[#05706f] to-[#023e3d] bg-clip-text text-transparent underline decoration-[#F3E8BC] decoration-4 underline-offset-8">every visitor</span>.
               </h1>
@@ -814,8 +814,7 @@ export default function Home() {
               <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#022928] via-[#035352] to-[#011f1e] px-6 py-14 text-center shadow-2xl shadow-[#035352]/20 sm:px-12 sm:py-20">
                 <div className="absolute left-1/2 top-[-12rem] size-[30rem] -translate-x-1/2 rounded-full border border-[#F3E8BC]/10 bg-[#05706f]/20 blur-2xl pointer-events-none" />
                 <div className="relative">
-                  <Badge className="border-[#F3E8BC]/30 bg-[#F3E8BC]/15 text-[#F3E8BC]" data-testid="final-cta-eyebrow">A better first impression starts here</Badge>
-                  <h2 className="mx-auto mt-6 max-w-3xl font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="final-cta-heading">Ready to modernise your visitor experience?</h2>
+                  <h2 className="mx-auto font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="final-cta-heading">Ready to modernise your visitor experience?</h2>
                   <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-teal-100/80 sm:text-lg" data-testid="final-cta-copy">See how Digi-Gate can help your organisation create a smarter, more professional way to manage visitors.</p>
                   <div className="mt-9 flex flex-col sm:flex-row justify-center gap-4">
                     <Button onClick={() => navigate("/register")} size="lg" className="h-16 rounded-full bg-white px-8 font-bold text-[#035352] hover:-translate-y-1 hover:bg-[#F3E8BC] flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer" data-testid="final-cta-scan-qr">
@@ -869,9 +868,6 @@ export default function Home() {
 
                 <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-2xl">
-                    <Badge className="border-[#F3E8BC]/30 bg-[#F3E8BC]/15 text-[#F3E8BC] mb-4" data-testid="register-section-badge">
-                      For Businesses & Institutions
-                    </Badge>
                     <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="register-section-heading">
                       Want to use Digi-Gate for your organisation?
                     </h2>

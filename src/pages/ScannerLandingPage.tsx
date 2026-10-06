@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5Qrcode } from 'html5-qrcode';
-import { QrCode, Camera, Upload, Building2, ArrowRight, AlertCircle, RefreshCw, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { QrCode, Camera, Upload, Building2, ArrowRight, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 export default function ScannerLandingPage() {
   const navigate = useNavigate();
@@ -132,58 +132,57 @@ export default function ScannerLandingPage() {
   };
 
   return (
-    <div className="min-h-screen py-6 px-4 bg-[#F4F7F6] flex flex-col justify-between items-center selection:bg-[#035352] selection:text-white">
-      <div className="w-full max-w-md mx-auto space-y-5">
+    <div className="min-h-screen py-4 sm:py-6 px-3 sm:px-4 bg-[#F4F7F6] flex flex-col justify-between items-center selection:bg-[#035352] selection:text-white overflow-x-hidden w-full">
+      <div className="w-full max-w-md mx-auto space-y-4 sm:space-y-5">
         {/* Branding Header */}
-        <div className="text-center space-y-2 pt-2">
-          <div className="w-14 h-14 rounded-2xl bg-[#035352] text-[#F3E8BC] flex items-center justify-center mx-auto shadow-xl shadow-[#035352]/20 border border-[#035352] animate-in zoom-in duration-300">
-            <ShieldCheck className="w-8 h-8 stroke-[2.2]" />
+        <div className="text-center space-y-2 pt-2 animate-in zoom-in duration-300">
+          <div className="flex items-center justify-center">
+            <img
+              src="/digigate_logo.png"
+              alt="DigiGate Visitor Management System Logo"
+              className="h-20 sm:h-24 max-w-[260px] sm:max-w-[280px] w-auto mx-auto object-contain filter drop-shadow-md hover:scale-[1.02] transition-transform duration-300"
+            />
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-[#172525] tracking-tight">
-              DIGI-GATE
-            </h1>
-            <p className="text-[11px] font-extrabold text-[#035352] uppercase tracking-wider">
-              Smart Kiosk & Visitor Check-In Portal
-            </p>
-          </div>
+          <p className="text-[10px] sm:text-[11px] font-extrabold text-[#035352] uppercase tracking-wider px-2">
+            Smart Kiosk &amp; Visitor Check-In Portal
+          </p>
         </div>
 
         {/* Hero Card Container */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl shadow-[#035352]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl sm:shadow-2xl shadow-[#035352]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 w-full">
           {/* Tab Navigation Bar */}
-          <div className="flex border-b border-slate-100 bg-slate-50/80 p-1.5 gap-1">
+          <div className="flex border-b border-slate-100 bg-slate-50/80 p-1 sm:p-1.5 gap-1 w-full">
             <button
               onClick={() => setActiveTab('camera')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'camera'
+              className={`flex-1 py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${activeTab === 'camera'
                 ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-[#035352]'
                 }`}
             >
-              <Camera className="w-4 h-4" />
-              <span>Scan QR</span>
+              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="truncate">Scan QR</span>
             </button>
 
             <button
               onClick={() => setActiveTab('upload')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'upload'
+              className={`flex-1 py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${activeTab === 'upload'
                 ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-[#035352]'
                 }`}
             >
-              <Upload className="w-4 h-4" />
-              <span>Upload</span>
+              <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="truncate">Upload</span>
             </button>
 
             <button
               onClick={() => setActiveTab('manual')}
-              className={`flex-1 py-3 px-2 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all ${activeTab === 'manual'
+              className={`flex-1 py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold flex items-center justify-center gap-1 sm:gap-1.5 transition-all ${activeTab === 'manual'
                 ? 'bg-white text-[#035352] shadow-sm border border-slate-200/60'
                 : 'text-slate-500 hover:text-[#035352]'
                 }`}
             >
-              <Building2 className="w-4 h-4" />
-              <span>Code</span>
+              <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+              <span className="truncate">Code</span>
             </button>
           </div>
 
@@ -309,7 +308,7 @@ export default function ScannerLandingPage() {
         </div>
 
         {/* Quick Kiosk Links */}
-        <div className="bg-white/80 backdrop-blur-md rounded-2xl p-3 border border-slate-200/70 text-center shadow-sm">
+        <div className="bg-white rounded-2xl p-3 border border-slate-200/90 text-center shadow-sm">
           <p className="text-[11px] font-bold text-slate-500 flex items-center justify-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#035352]" />
             <span>Instant Self Clearance & Touchless Check-In</span>

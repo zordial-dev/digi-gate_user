@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Building2,
@@ -8,7 +8,6 @@ import {
   Upload,
   X,
   CheckCircle2,
-  Sparkles,
   Loader2,
   AlertCircle,
   Clock,
@@ -22,10 +21,34 @@ import {
   Mail,
   KeyRound,
   RotateCw,
+  ChevronDown,
+  Check,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { organisationApi } from "@/api/services";
+
+const COUNTRY_CODES = [
+  { code: "+91", flag: "🇮🇳", name: "India", iso: "IN" },
+  { code: "+1", flag: "🇺🇸", name: "United States / Canada", iso: "US" },
+  { code: "+44", flag: "🇬🇧", name: "United Kingdom", iso: "UK" },
+  { code: "+971", flag: "🇦🇪", name: "United Arab Emirates", iso: "AE" },
+  { code: "+65", flag: "🇸🇬", name: "Singapore", iso: "SG" },
+  { code: "+61", flag: "🇦🇺", name: "Australia", iso: "AU" },
+  { code: "+49", flag: "🇩🇪", name: "Germany", iso: "DE" },
+  { code: "+33", flag: "🇫🇷", name: "France", iso: "FR" },
+  { code: "+81", flag: "🇯🇵", name: "Japan", iso: "JP" },
+  { code: "+86", flag: "🇨🇳", name: "China", iso: "CN" },
+  { code: "+966", flag: "🇸🇦", name: "Saudi Arabia", iso: "SA" },
+  { code: "+974", flag: "🇶🇦", name: "Qatar", iso: "QA" },
+  { code: "+968", flag: "🇴🇲", name: "Oman", iso: "OM" },
+  { code: "+965", flag: "🇰🇼", name: "Kuwait", iso: "KW" },
+  { code: "+973", flag: "🇧🇭", name: "Bahrain", iso: "BH" },
+  { code: "+880", flag: "🇧🇩", name: "Bangladesh", iso: "BD" },
+  { code: "+94", flag: "🇱🇰", name: "Sri Lanka", iso: "LK" },
+  { code: "+977", flag: "🇳🇵", name: "Nepal", iso: "NP" },
+];
 
 export default function RegisterBusinessPage() {
   const navigate = useNavigate();
@@ -47,6 +70,38 @@ export default function RegisterBusinessPage() {
     host_available_message: "Thank you for visiting! {visitor_name}, {host_name} will be with you shortly.",
     host_unavailable_message: "Thank you for visiting! {visitor_name}, {host_name} is currently unavailable.",
   });
+
+  // Country code state & custom dropdown
+  const [countryCode, setCountryCode] = useState("+91");
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [countrySearchQuery, setCountrySearchQuery] = useState("");
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close country dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const selectedCountry =
+    COUNTRY_CODES.find((c) => c.code === countryCode) || COUNTRY_CODES[0];
+
+  const filteredCountries = COUNTRY_CODES.filter(
+    (c) =>
+      c.name.toLowerCase().includes(countrySearchQuery.toLowerCase()) ||
+      c.code.includes(countrySearchQuery) ||
+      c.iso.toLowerCase().includes(countrySearchQuery.toLowerCase())
+  );
 
   // Logo upload state
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -97,6 +152,14 @@ export default function RegisterBusinessPage() {
     setError(null);
     if (!formData.name.trim()) {
       setError("Organisation name is required.");
+      return;
+    }
+    if (!formData.phone.trim()) {
+      setError("Contact phone number is required.");
+      return;
+    }
+    if (!logoFile && !logoPreview) {
+      setError("Organisation logo is required.");
       return;
     }
     setCurrentStep(2);
@@ -201,7 +264,12 @@ export default function RegisterBusinessPage() {
       data.append("email", formData.email.trim().toLowerCase());
       data.append("password", formData.password.trim());
 
-      if (formData.phone.trim()) data.append("phone", formData.phone.trim());
+      if (formData.phone.trim()) {
+        const fullPhone = formData.phone.trim().startsWith("+")
+          ? formData.phone.trim()
+          : `${countryCode} ${formData.phone.trim()}`;
+        data.append("phone", fullPhone);
+      }
       if (formData.website.trim()) data.append("website", formData.website.trim());
       if (formData.address.trim()) data.append("address", formData.address.trim());
       if (formData.city.trim()) data.append("city", formData.city.trim());
@@ -235,25 +303,32 @@ export default function RegisterBusinessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F6] text-[#172525] flex flex-col justify-between" data-testid="register-business-page">
+    <div className="min-h-screen bg-[#F4F7F6] text-[#172525] flex flex-col justify-between overflow-x-hidden" data-testid="register-business-page">
       {/* Header Bar */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-[72px] max-w-5xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white shadow-sm gpu-layer">
+        <div className="mx-auto flex h-[64px] sm:h-[72px] max-w-5xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5" aria-label="Digi-Gate Home">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-[#035352] text-[#F3E8BC] font-heading font-extrabold text-lg shadow-sm">
-              DG
-            </span>
-            <span className="font-heading text-xl font-extrabold tracking-tight text-[#035352]">
-              Digi<span className="text-[#05706f]">-Gate</span>
-            </span>
+            <img
+              src="/digigate_logo.png"
+              alt="DigiGate Logo"
+              className="h-9 sm:h-10 w-auto object-contain rounded-md"
+            />
+            <div className="flex flex-col text-left">
+              <span className="font-heading text-lg sm:text-xl font-black tracking-tight text-[#035352] leading-none">
+                Digi<span className="text-[#05706f]">-Gate</span>
+              </span>
+              <span className="text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest text-[#035352]/70 leading-none mt-1">
+                Visitor System
+              </span>
+            </div>
           </Link>
 
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-[#035352] hover:bg-[#e6f0f0] transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-slate-200 bg-[#F4F7F6] px-3.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-[#035352] hover:bg-[#e6f0f0] transition-colors shadow-sm"
           >
             <ArrowLeft className="size-3.5" />
-            <span>Back to Home</span>
+            <span>Back <span className="hidden sm:inline">to Home</span></span>
           </Link>
         </div>
       </header>
@@ -307,130 +382,69 @@ export default function RegisterBusinessPage() {
             </div>
           </div>
         ) : (
-          <div className="space-y-8" data-testid="register-business-form-card">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl shadow-[#035352]/10 p-5 sm:p-8 space-y-6 animate-in fade-in duration-300" data-testid="register-business-form-card">
             {/* Page Header */}
-            <div>
-              <Badge className="border-[#035352]/20 bg-[#035352]/10 text-[#035352] text-xs font-bold py-1 px-3.5 rounded-full" data-testid="register-page-badge">
-                <Sparkles className="mr-1.5 size-3.5 text-[#05706f]" /> Organisation Onboarding
-              </Badge>
-              <h1 className="mt-3 font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-[#172525]" data-testid="register-page-title">
+            <div className="text-center sm:text-left space-y-1">
+              <h1 className="mt-0 font-heading text-2xl sm:text-3xl font-black tracking-tight text-[#172525]" data-testid="register-page-title">
                 Register Your Organisation
               </h1>
-              <p className="mt-2 text-sm sm:text-base text-[#4a5d5c] leading-relaxed" data-testid="register-page-description">
-                Follow the 4 steps below to set up digital visitor check-ins, verify your official business email, and configure your master portal password.
+              <p className="text-xs sm:text-sm text-[#4a5d5c] leading-relaxed" data-testid="register-page-description">
+                Complete these 4 steps to register your organisation.
               </p>
             </div>
 
-            {/* Step Progress Stepper Bar (4 Steps) */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                {/* Step 1 */}
-                <div
-                  onClick={() => currentStep > 1 && setCurrentStep(1)}
-                  className={`flex items-center gap-2 ${currentStep > 1 ? "cursor-pointer" : ""}`}
-                >
-                  <div
-                    className={`flex size-7 sm:size-8 items-center justify-center rounded-full text-xs font-extrabold transition-all ${
-                      currentStep === 1
-                        ? "bg-[#035352] text-white ring-4 ring-[#035352]/10"
-                        : currentStep > 1
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    {currentStep > 1 ? "✓" : "1"}
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 1</p>
-                    <p className={`text-xs font-bold ${currentStep === 1 ? "text-[#035352]" : "text-slate-700"}`}>
-                      Organisation
-                    </p>
-                  </div>
+            {/* Step Progress Stepper Bar */}
+            <div className="rounded-2xl border border-slate-200/90 bg-slate-50/80 p-3 sm:p-3.5 space-y-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="rounded-full bg-[#035352] text-[#F3E8BC] text-[10px] sm:text-[11px] font-extrabold px-2.5 py-1 shadow-sm shrink-0">
+                    Step {currentStep} of 4
+                  </span>
+                  <h3 className="text-xs sm:text-sm font-extrabold text-[#172525] truncate">
+                    {currentStep === 1 && "Organisation Information"}
+                    {currentStep === 2 && "Workplace & Location"}
+                    {currentStep === 3 && "Business Email & OTP"}
+                    {currentStep === 4 && "Set Master Password"}
+                  </h3>
                 </div>
+                <span className="text-[11px] sm:text-xs font-black text-[#035352] font-mono shrink-0 bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                  {currentStep * 25}%
+                </span>
+              </div>
 
-                <div className={`h-0.5 flex-1 mx-2 sm:mx-3 rounded-full transition-all ${currentStep > 1 ? "bg-emerald-400" : "bg-slate-200"}`} />
-
-                {/* Step 2 */}
-                <div
-                  onClick={() => currentStep > 2 && setCurrentStep(2)}
-                  className={`flex items-center gap-2 ${currentStep > 2 ? "cursor-pointer" : ""}`}
-                >
-                  <div
-                    className={`flex size-7 sm:size-8 items-center justify-center rounded-full text-xs font-extrabold transition-all ${
-                      currentStep === 2
-                        ? "bg-[#035352] text-white ring-4 ring-[#035352]/10"
-                        : currentStep > 2
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    {currentStep > 2 ? "✓" : "2"}
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 2</p>
-                    <p className={`text-xs font-bold ${currentStep === 2 ? "text-[#035352]" : "text-slate-700"}`}>
-                      Workplace
-                    </p>
-                  </div>
-                </div>
-
-                <div className={`h-0.5 flex-1 mx-2 sm:mx-3 rounded-full transition-all ${currentStep > 2 ? "bg-emerald-400" : "bg-slate-200"}`} />
-
-                {/* Step 3 */}
-                <div
-                  onClick={() => currentStep > 3 && setCurrentStep(3)}
-                  className={`flex items-center gap-2 ${currentStep > 3 ? "cursor-pointer" : ""}`}
-                >
-                  <div
-                    className={`flex size-7 sm:size-8 items-center justify-center rounded-full text-xs font-extrabold transition-all ${
-                      currentStep === 3
-                        ? "bg-[#035352] text-white ring-4 ring-[#035352]/10"
-                        : currentStep > 3
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    {currentStep > 3 ? "✓" : "3"}
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 3</p>
-                    <p className={`text-xs font-bold ${currentStep === 3 ? "text-[#035352]" : "text-slate-700"}`}>
-                      Verify Email
-                    </p>
-                  </div>
-                </div>
-
-                <div className={`h-0.5 flex-1 mx-2 sm:mx-3 rounded-full transition-all ${currentStep > 3 ? "bg-emerald-400" : "bg-slate-200"}`} />
-
-                {/* Step 4 */}
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex size-7 sm:size-8 items-center justify-center rounded-full text-xs font-extrabold transition-all ${
-                      currentStep === 4
-                        ? "bg-[#035352] text-white ring-4 ring-[#035352]/10"
-                        : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    4
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 4</p>
-                    <p className={`text-xs font-bold ${currentStep === 4 ? "text-[#035352]" : "text-slate-700"}`}>
-                      Set Password
-                    </p>
-                  </div>
-                </div>
+              {/* 4-Segment Progress Bar */}
+              <div className="grid grid-cols-4 gap-1.5 pt-0.5">
+                {[1, 2, 3, 4].map((step) => {
+                  const isCompleted = currentStep > step;
+                  const isActive = currentStep === step;
+                  return (
+                    <button
+                      key={step}
+                      type="button"
+                      onClick={() => isCompleted && setCurrentStep(step as 1 | 2 | 3 | 4)}
+                      disabled={!isCompleted}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        isCompleted
+                          ? "bg-emerald-500 cursor-pointer hover:opacity-90"
+                          : isActive
+                          ? "bg-[#035352] ring-2 ring-[#035352]/20"
+                          : "bg-slate-200 cursor-not-allowed"
+                      }`}
+                      title={`Step ${step}`}
+                    />
+                  );
+                })}
               </div>
             </div>
 
-            {error && (
+            {error && !(currentStep === 3 && otpSent) && (
               <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700 animate-in fade-in duration-200">
                 <AlertCircle className="size-4 shrink-0 text-red-500" />
                 <span>{error}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-8" data-testid="register-business-form">
+            <form onSubmit={handleSubmit} className="space-y-6" data-testid="register-business-form">
               {/* ============================================================== */}
               {/* STEP 1: Organisation Information */}
               {/* ============================================================== */}
@@ -459,22 +473,181 @@ export default function RegisterBusinessPage() {
 
                   <div>
                     <label className="block text-xs font-bold text-[#172525] mb-1.5 flex items-center gap-1">
-                      <Phone className="size-3.5 text-slate-400" /> Contact Phone
+                      <Phone className="size-3.5 text-slate-400" /> Contact Phone <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="+91 98765 43210"
-                      className="w-full h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                      data-testid="input-org-phone"
-                    />
+
+                    {/* Unified Phone Input Container */}
+                    <div className="w-full h-11 flex items-center rounded-full border border-slate-200 bg-white px-3 shadow-sm focus-within:border-[#035352] focus-within:ring-2 focus-within:ring-[#035352]/20 transition-all">
+                      {/* Custom Country Code Dropdown Trigger */}
+                      <div ref={countryDropdownRef} className="relative shrink-0 border-r border-slate-200/80 pr-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-bold text-[#172525] hover:bg-[#e6f0f0] transition-colors cursor-pointer"
+                          aria-label="Select Country Code"
+                        >
+                          <span className="text-sm">{selectedCountry.flag}</span>
+                          <span>{selectedCountry.code}</span>
+                          <span className="text-[10px] text-slate-400 font-semibold">({selectedCountry.iso})</span>
+                          <ChevronDown
+                            className={`size-3 text-[#035352] transition-transform duration-200 ${
+                              isCountryDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {/* Custom Floating Themed Menu */}
+                        {isCountryDropdownOpen && (
+                          <div className="absolute left-0 top-full mt-2.5 z-50 w-64 rounded-2xl border border-slate-200/80 bg-white p-2 shadow-xl shadow-[#035352]/10 animate-in fade-in zoom-in-95 duration-150">
+                            {/* Search Filter Header */}
+                            <div className="flex items-center gap-2 rounded-xl bg-[#F4F7F6] px-3 py-1.5 mb-1.5 border border-slate-100">
+                              <Search className="size-3.5 text-[#035352]" />
+                              <input
+                                type="text"
+                                value={countrySearchQuery}
+                                onChange={(e) => setCountrySearchQuery(e.target.value)}
+                                placeholder="Search country or code..."
+                                className="w-full bg-transparent text-xs text-[#172525] placeholder:text-slate-400 outline-none"
+                                autoFocus
+                              />
+                            </div>
+
+                            {/* Country List */}
+                            <div className="max-h-52 overflow-y-auto space-y-0.5 custom-scrollbar pr-1">
+                              {filteredCountries.length > 0 ? (
+                                filteredCountries.map((country) => {
+                                  const isSelected = country.code === countryCode;
+                                  return (
+                                    <button
+                                      key={country.code + country.iso}
+                                      type="button"
+                                      onClick={() => {
+                                        setCountryCode(country.code);
+                                        setIsCountryDropdownOpen(false);
+                                        setCountrySearchQuery("");
+                                      }}
+                                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer ${
+                                        isSelected
+                                          ? "bg-[#035352] text-white font-bold shadow-sm"
+                                          : "text-[#172525] hover:bg-[#e6f0f0] hover:text-[#035352] font-medium"
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2 truncate">
+                                        <span className="text-sm">{country.flag}</span>
+                                        <span className="font-bold">{country.code}</span>
+                                        <span className={`truncate text-[11px] ${isSelected ? "text-teal-100" : "text-slate-500"}`}>
+                                          {country.name}
+                                        </span>
+                                      </div>
+                                      {isSelected && <Check className="size-3.5 text-[#F3E8BC] shrink-0 ml-1" />}
+                                    </button>
+                                  );
+                                })
+                              ) : (
+                                <p className="p-3 text-center text-xs text-slate-400 font-medium">
+                                  No country found
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Phone Input */}
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="98765 43210"
+                        required
+                        className="flex-1 min-w-0 bg-transparent px-3 text-sm text-[#172525] placeholder:text-slate-400 outline-none"
+                        data-testid="input-org-phone"
+                      />
+                    </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-[#172525] mb-1.5 flex items-center gap-1">
-                      <Globe className="size-3.5 text-slate-400" /> Website URL
+                      <Upload className="size-3.5 text-slate-400" /> Organisation Logo <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      {/* Prominent Large Logo Preview Box */}
+                      <div className="relative w-28 h-28 shrink-0 rounded-2xl border-2 border-dashed border-[#035352]/30 bg-[#F4F7F6] flex items-center justify-center overflow-hidden shadow-md transition-all">
+                        {logoPreview ? (
+                          <img
+                            src={logoPreview}
+                            alt="Organisation Logo Preview"
+                            className="size-full object-contain p-2 rounded-xl bg-white"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-1 text-slate-400">
+                            <Building2 className="size-8 text-[#035352]/40" />
+                            <span className="text-[10px] font-bold text-slate-400">No Logo</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Upload Control & Information */}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        {logoPreview ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider">
+                                Logo Attached
+                              </span>
+                              <span className="text-xs font-semibold text-[#172525] truncate">
+                                {logoFile?.name}
+                              </span>
+                            </div>
+                            <p className="text-xs text-[#4a5d5c]">
+                              This logo will appear on your organisation's visitor kiosk, gate passes, and portal header.
+                            </p>
+                            <div className="flex items-center gap-3 pt-1">
+                              <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] transition-all shadow-sm cursor-pointer">
+                                <Upload className="size-3.5" /> Change Image
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleLogoChange}
+                                  className="hidden"
+                                  data-testid="input-org-logo-change"
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={removeLogo}
+                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-rose-200 bg-rose-50 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-all cursor-pointer"
+                              >
+                                <X className="size-3.5" /> Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-xs text-[#4a5d5c] leading-relaxed">
+                              Upload your official business or institution logo (PNG, JPG, SVG). It will be displayed on digital visitor passes and host notifications.
+                            </p>
+                            <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-dashed border-[#035352]/50 bg-[#e6f0f0]/60 text-xs font-bold text-[#035352] hover:bg-[#e6f0f0] transition-all shadow-sm cursor-pointer">
+                              <Upload className="size-4 text-[#05706f]" />
+                              <span>Select Logo Image</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoChange}
+                                className="hidden"
+                                data-testid="input-org-logo"
+                              />
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#172525] mb-1.5 flex items-center gap-1">
+                      <Globe className="size-3.5 text-slate-400" /> Website URL (Optional)
                     </label>
                     <input
                       type="url"
@@ -487,50 +660,23 @@ export default function RegisterBusinessPage() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-[#172525] mb-1.5 flex items-center gap-1">
-                      <Upload className="size-3.5 text-slate-400" /> Organisation Logo (Optional)
-                    </label>
-                    {logoPreview ? (
-                      <div className="flex h-12 items-center justify-between rounded-full border border-slate-200 bg-white px-4 shadow-sm">
-                        <div className="flex items-center gap-3 truncate">
-                          <img src={logoPreview} alt="Logo" className="size-8 object-contain rounded-full bg-slate-50 border border-slate-100" />
-                          <span className="text-xs text-[#4a5d5c] truncate">{logoFile?.name}</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={removeLogo}
-                          className="flex size-7 items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors cursor-pointer shrink-0"
-                        >
-                          <X className="size-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-dashed border-[#035352]/40 bg-white px-5 text-xs font-bold text-[#035352] hover:bg-[#e6f0f0] transition-all shadow-sm">
-                        <Upload className="size-4 text-[#05706f]" />
-                        <span>Upload Logo Image</span>
-                        <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" data-testid="input-org-logo" />
-                      </label>
-                    )}
-                  </div>
-
                   {/* Step 1 Actions */}
-                  <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
+                  <div className="pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => navigate("/")}
-                      className="h-11 px-6 rounded-full border border-slate-300 text-xs font-semibold text-[#172525] hover:bg-slate-100 cursor-pointer"
+                      className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border border-slate-200 text-xs font-bold text-[#172525] hover:bg-slate-50 cursor-pointer"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="button"
                       onClick={handleProceedToStep2}
-                      className="h-11 px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer"
+                      className="h-10 sm:h-11 px-6 sm:px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-1.5 cursor-pointer"
                       data-testid="btn-step1-next"
                     >
-                      <span>Next: Workplace Address</span>
+                      <span>Next: Location</span>
                       <ArrowRight className="size-3.5" />
                     </Button>
                   </div>
@@ -637,22 +783,22 @@ export default function RegisterBusinessPage() {
                   </div>
 
                   {/* Step 2 Actions */}
-                  <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
+                  <div className="pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setCurrentStep(1)}
-                      className="h-11 px-6 rounded-full border border-slate-300 text-xs font-semibold text-[#172525] hover:bg-slate-100 cursor-pointer flex items-center gap-1.5"
+                      className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border border-slate-200 text-xs font-bold text-[#172525] hover:bg-slate-50 cursor-pointer flex items-center gap-1.5"
                     >
                       <ArrowLeft className="size-3.5" /> Back
                     </Button>
                     <Button
                       type="button"
                       onClick={handleProceedToStep3}
-                      className="h-11 px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer"
+                      className="h-10 sm:h-11 px-6 sm:px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-1.5 cursor-pointer"
                       data-testid="btn-step2-next"
                     >
-                      <span>Next: Verify Business Email</span>
+                      <span>Next: Verify Email</span>
                       <ArrowRight className="size-3.5" />
                     </Button>
                   </div>
@@ -669,12 +815,6 @@ export default function RegisterBusinessPage() {
                     <span>Step 3: Business Email & OTP Verification</span>
                   </div>
 
-                  <div className="rounded-2xl border border-[#035352]/20 bg-[#035352]/5 p-4 text-xs text-[#035352] space-y-1">
-                    <p className="font-bold">✉️ Security Email Verification</p>
-                    <p className="text-[#4a5d5c] leading-relaxed">
-                      Enter your official business email address. When you click send, a 4-digit verification code will be sent to verify ownership before setting up your administrator passwords.
-                    </p>
-                  </div>
 
                   {/* Business Email Input */}
                   <div>
@@ -688,7 +828,9 @@ export default function RegisterBusinessPage() {
                         </span>
                       )}
                     </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
+
+                    {/* Integrated Pill Input Container */}
+                    <div className="w-full flex items-center rounded-full border border-slate-200 bg-white p-1 pl-4 shadow-sm focus-within:border-[#035352] focus-within:ring-2 focus-within:ring-[#035352]/20 transition-all">
                       <input
                         type="email"
                         name="email"
@@ -702,14 +844,14 @@ export default function RegisterBusinessPage() {
                         disabled={emailVerified}
                         placeholder="admin@yourcompany.com"
                         required
-                        className="flex-1 h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all disabled:bg-slate-100 disabled:cursor-not-allowed"
+                        className="flex-1 min-w-0 bg-transparent text-xs sm:text-sm text-[#172525] placeholder:text-slate-400 outline-none disabled:cursor-not-allowed"
                         data-testid="input-org-email"
                       />
                       <Button
                         type="button"
                         onClick={handleSendOtp}
                         disabled={isSendingOtp || !formData.email.trim()}
-                        className="h-11 px-6 rounded-full bg-[#035352] hover:bg-[#023e3d] text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                        className="h-9 px-4 sm:px-5 rounded-full bg-[#035352] hover:bg-[#023e3d] text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ml-1"
                         data-testid="btn-send-otp"
                       >
                         {isSendingOtp ? (
@@ -718,11 +860,11 @@ export default function RegisterBusinessPage() {
                           </>
                         ) : otpSent ? (
                           <>
-                            <RotateCw className="size-3.5" /> Resend Code
+                            <RotateCw className="size-3.5" /> Resend
                           </>
                         ) : (
                           <>
-                            <Mail className="size-3.5" /> Send Code
+                            <CheckCircle2 className="size-3.5" /> Verify
                           </>
                         )}
                       </Button>
@@ -740,70 +882,84 @@ export default function RegisterBusinessPage() {
 
                   {/* OTP Input Section (Visible when code dispatched) */}
                   {otpSent && (
-                    <div className="p-5 rounded-2xl border border-slate-200 bg-white space-y-4 shadow-sm animate-in fade-in duration-200">
-                      <div>
-                        <label className="block text-xs font-bold text-[#172525] mb-1.5">
+                    <div className="py-5 px-6 sm:py-6 sm:px-8 rounded-2xl border border-slate-200 bg-white shadow-md shadow-[#035352]/5 animate-in fade-in duration-200 flex flex-col items-center justify-center text-center">
+                      <div className="w-full max-w-md space-y-2.5 flex flex-col items-center">
+                        <label className="block text-sm sm:text-base font-extrabold text-[#172525]">
                           Enter Verification Code <span className="text-red-500">*</span>
                         </label>
+
+                        {/* OTP Input */}
                         <input
                           type="text"
                           maxLength={6}
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
                           placeholder="••••••"
-                          className="w-full sm:w-60 h-12 px-4 rounded-xl border border-slate-300 text-center font-mono text-xl tracking-[0.5em] font-bold text-[#035352] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20"
+                          className="w-full max-w-xs h-11 sm:h-12 px-4 rounded-xl border-2 border-slate-300 text-center font-mono text-xl sm:text-2xl tracking-[0.5em] font-black text-[#035352] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-4 focus:ring-[#035352]/15 transition-all"
                           data-testid="input-org-otp"
                         />
-                        <p className="mt-1.5 text-[11px] text-slate-500">
+
+                        {/* Error Alert Tag directly under the OTP field */}
+                        {error && (
+                          <div className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-bold text-red-700 animate-in fade-in duration-200 shadow-sm">
+                            <AlertCircle className="size-3.5 shrink-0 text-red-500" />
+                            <span>{error}</span>
+                          </div>
+                        )}
+
+                        <p className="text-xs text-[#4a5d5c] font-medium">
                           Enter the code sent to your email to verify ownership.
                         </p>
-                      </div>
 
-                      <div className="pt-2">
-                        <Button
-                          type="button"
-                          onClick={handleVerifyOtpAndProceed}
-                          disabled={isVerifyingOtp || !otpCode.trim()}
-                          className="h-11 px-8 rounded-full bg-[#035352] hover:bg-[#023e3d] text-white text-xs font-bold shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer"
-                          data-testid="btn-verify-otp-proceed"
-                        >
-                          {isVerifyingOtp ? (
-                            <>
-                              <Loader2 className="size-3.5 animate-spin" /> Verifying Code...
-                            </>
-                          ) : (
-                            <>
-                              <span>Verify & Proceed to Set Password</span>
-                              <ArrowRight className="size-3.5" />
-                            </>
-                          )}
-                        </Button>
+                        <div className="pt-1.5 w-full flex justify-center">
+                          <Button
+                            type="button"
+                            onClick={handleVerifyOtpAndProceed}
+                            disabled={isVerifyingOtp || !otpCode.trim()}
+                            className="h-11 px-7 rounded-full bg-[#035352] hover:bg-[#023e3d] text-white text-xs sm:text-sm font-bold shadow-md shadow-[#035352]/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                            data-testid="btn-verify-otp-proceed"
+                          >
+                            {isVerifyingOtp ? (
+                              <>
+                                <Loader2 className="size-3.5 animate-spin" /> Verifying Code...
+                              </>
+                            ) : (
+                              <>
+                                <span>Verify & Proceed to Set Password</span>
+                                <ArrowRight className="size-3.5" />
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}
 
                   {/* Step 3 Navigation Actions */}
-                  <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
+                  <div className="pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setCurrentStep(2)}
-                      className="h-11 px-6 rounded-full border border-slate-300 text-xs font-semibold text-[#172525] hover:bg-slate-100 cursor-pointer flex items-center gap-1.5"
+                      className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border border-slate-200 text-xs font-bold text-[#172525] hover:bg-slate-50 cursor-pointer flex items-center gap-1.5"
                     >
                       <ArrowLeft className="size-3.5" /> Back
                     </Button>
 
-                    {!otpSent && (
-                      <Button
-                        type="button"
-                        onClick={handleSendOtp}
-                        disabled={isSendingOtp || !formData.email.trim()}
-                        className="h-11 px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer"
-                      >
-                        {isSendingOtp ? "Sending Code..." : "Send Verification Code"}
-                        <ArrowRight className="size-3.5" />
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        if (emailVerified) {
+                          setCurrentStep(4);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
+                      }}
+                      disabled={!emailVerified}
+                      className="h-10 sm:h-11 px-6 sm:px-8 rounded-full bg-[#035352] text-xs font-bold text-white hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span>Next</span>
+                      <ArrowRight className="size-3.5" />
+                    </Button>
                   </div>
                 </div>
               )}
@@ -947,41 +1103,41 @@ export default function RegisterBusinessPage() {
                   </div>
 
                   {/* Step 4 Actions (Submit) */}
-                  <div className="pt-6 border-t border-slate-200 space-y-4">
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="pt-5 border-t border-slate-100 space-y-4">
+                    <div className="flex items-center justify-between gap-3">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setCurrentStep(3)}
                         disabled={loading}
-                        className="w-full sm:w-auto h-12 px-6 rounded-full border border-slate-300 text-xs font-semibold text-[#172525] hover:bg-slate-100 cursor-pointer flex items-center justify-center gap-1.5"
+                        className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border border-slate-200 text-xs font-bold text-[#172525] hover:bg-slate-50 cursor-pointer flex items-center justify-center gap-1.5"
                       >
                         <ArrowLeft className="size-3.5" /> Back
                       </Button>
                       <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full sm:flex-1 h-12 rounded-full bg-[#035352] text-sm font-bold text-white hover:bg-[#023e3d] transition-all shadow-lg shadow-[#035352]/20 flex items-center justify-center gap-2 cursor-pointer"
+                        className="h-10 sm:h-11 px-6 sm:px-8 rounded-full bg-[#035352] text-xs sm:text-sm font-bold text-white hover:bg-[#023e3d] transition-all shadow-md shadow-[#035352]/20 flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-initial"
                         data-testid="submit-register-business-btn"
                       >
                         {loading ? (
                           <>
-                            <Loader2 className="size-4 animate-spin" /> Submitting Registration...
+                            <Loader2 className="size-4 animate-spin" /> Submitting...
                           </>
                         ) : (
                           <>
-                            <ShieldCheck className="size-4" /> Submit Organisation Registration
+                            <ShieldCheck className="size-4" /> Submit Registration
                           </>
                         )}
                       </Button>
                     </div>
 
-                    <div className="flex items-center justify-center gap-5 text-xs text-[#718786] pt-1">
-                      <span className="flex items-center gap-1.5 font-medium">
+                    <div className="flex items-center justify-center gap-4 text-xs text-[#718786] pt-1">
+                      <span className="flex items-center gap-1 font-medium">
                         <ShieldCheck className="size-3.5 text-emerald-600" /> 256-bit Encrypted
                       </span>
                       <span className="size-1 rounded-full bg-slate-300" />
-                      <span className="flex items-center gap-1.5 font-medium">
+                      <span className="flex items-center gap-1 font-medium">
                         <Zap className="size-3.5 text-amber-500" /> Fast Verification
                       </span>
                     </div>

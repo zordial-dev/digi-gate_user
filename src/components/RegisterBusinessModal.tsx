@@ -7,7 +7,6 @@ import {
   Upload,
   X,
   CheckCircle2,
-  Sparkles,
   Loader2,
   AlertCircle,
   Clock,
@@ -72,6 +71,14 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
 
     if (!formData.name.trim()) {
       setError("Organisation name is required.");
+      return;
+    }
+    if (!formData.phone.trim()) {
+      setError("Contact phone number is required.");
+      return;
+    }
+    if (!logoFile && !logoPreview) {
+      setError("Organisation logo is required.");
       return;
     }
 
@@ -148,10 +155,7 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
             <X className="size-4" />
           </button>
           <div className="relative z-10 pr-10">
-            <Badge className="border-[#F3E8BC]/30 bg-[#F3E8BC]/15 text-[#F3E8BC] text-[11px] py-0.5 px-2.5 rounded-full" data-testid="register-modal-badge">
-              <Sparkles className="mr-1 size-3 text-[#F3E8BC]" /> Digi-Gate Business Portal
-            </Badge>
-            <DialogHeader className="mt-2 text-left">
+            <DialogHeader className="mt-0 text-left">
               <DialogTitle className="font-heading text-xl font-bold tracking-tight text-white sm:text-2xl" data-testid="register-modal-title">
                 Register Your Organisation
               </DialogTitle>
@@ -240,7 +244,7 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
                       <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
-                        <Phone className="size-3 text-slate-400" /> Phone
+                        <Phone className="size-3 text-slate-400" /> Phone <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
@@ -248,6 +252,7 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+91 98765 43210"
+                        required
                         className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
                         data-testid="input-org-phone"
                       />
@@ -255,24 +260,7 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
 
                     <div>
                       <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
-                        <Globe className="size-3 text-slate-400" /> Website
-                      </label>
-                      <input
-                        type="url"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleInputChange}
-                        placeholder="https://example.com"
-                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                        data-testid="input-org-website"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-1">
-                    <div>
-                      <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
-                        <Upload className="size-3 text-slate-400" /> Logo
+                        <Upload className="size-3 text-slate-400" /> Logo <span className="text-red-500">*</span>
                       </label>
                       {logoPreview ? (
                         <div className="relative flex h-9 items-center justify-between rounded-full border border-slate-200 bg-[#F4F7F6] px-3">
@@ -293,6 +281,23 @@ export default function RegisterBusinessModal({ open, onOpenChange }: RegisterBu
                           <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" data-testid="input-org-logo" />
                         </label>
                       )}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#172525] mb-1 flex items-center gap-1">
+                        <Globe className="size-3 text-slate-400" /> Website (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        name="website"
+                        value={formData.website}
+                        onChange={handleInputChange}
+                        placeholder="https://example.com"
+                        className="w-full h-9 px-4 rounded-full border border-slate-200 bg-[#F4F7F6] text-xs text-[#172525] focus:bg-white focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
+                        data-testid="input-org-website"
+                      />
                     </div>
 
                     <div>
