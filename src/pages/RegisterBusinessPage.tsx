@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, useRef, useMemo, type ChangeEvent, type FormEvent } from "react";
+import { Country, State, City } from "country-state-city";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Building2,
@@ -27,7 +28,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { organisationApi } from "@/api/services";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { organisationApi, pincodeApi } from "@/api/services";
 
 const COUNTRY_CODES = [
   { code: "+91", flag: "🇮🇳", name: "India", iso: "IN" },
@@ -124,10 +126,240 @@ export default function RegisterBusinessPage() {
   const [error, setError] = useState<string | null>(null);
   const [successData, setSuccessData] = useState<any | null>(null);
 
+  // Pincode / Postal Code lookup state
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeStatus, setPincodeStatus] = useState<"success" | "error" | null>(null);
+  const [pincodeMessage, setPincodeMessage] = useState<string>("");
+  const pincodeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Country-State-City dynamic data
+  const allCountries = useMemo(() => Country.getAllCountries(), []);
+
+  const selectedCountryObj = useMemo(() => {
+    if (!formData.country) return allCountries.find((c) => c.isoCode === "IN");
+    return (
+      allCountries.find(
+        (c) =>
+          c.name.toLowerCase() === formData.country.toLowerCase() ||
+          c.isoCode.toLowerCase() === formData.country.toLowerCase()
+      ) || allCountries.find((c) => c.isoCode === "IN")
+    );
+  }, [formData.country, allCountries]);
+
+  const countryIsoCode = selectedCountryObj?.isoCode || "IN";
+  const isIndia = countryIsoCode === "IN";
+
+  const postalCodeLabel = useMemo(() => {
+    if (isIndia) return "Pincode / Postal Code";
+    if (countryIsoCode === "US") return "ZIP Code";
+    return "Postal / ZIP Code";
+  }, [isIndia, countryIsoCode]);
+
+  const postalCodePlaceholder = useMemo(() => {
+    if (isIndia) return "e.g. 110001";
+    if (countryIsoCode === "US") return "e.g. 90210";
+    if (countryIsoCode === "GB") return "e.g. SW1A";
+    if (countryIsoCode === "CA") return "e.g. M5V";
+    if (countryIsoCode === "DE") return "e.g. 10115";
+    return "e.g. 90210";
+  }, [isIndia, countryIsoCode]);
+
+  const availableStates = useMemo(() => {
+    return State.getStatesOfCountry(countryIsoCode);
+  }, [countryIsoCode]);
+
+  const selectedStateObj = useMemo(() => {
+    if (!formData.state) return null;
+    return availableStates.find(
+      (s) =>
+        s.name.toLowerCase() === formData.state.toLowerCase() ||
+        s.isoCode.toLowerCase() === formData.state.toLowerCase()
+    );
+  }, [formData.state, availableStates]);
+
+  const availableCities = useMemo(() => {
+    if (selectedStateObj) {
+      return City.getCitiesOfState(countryIsoCode, selectedStateObj.isoCode);
+    }
+    return City.getCitiesOfCountry(countryIsoCode) || [];
+  }, [countryIsoCode, selectedStateObj]);
+
+  const countryOptions = useMemo(() => {
+    const map = new Map<string, { value: string; label: string; flag?: string; sublabel?: string }>();
+    allCountries.forEach((c) => {
+      if (!map.has(c.name.toLowerCase())) {
+        map.set(c.name.toLowerCase(), {
+          value: c.name,
+          label: c.name,
+          flag: c.flag,
+          sublabel: c.isoCode,
+        });
+      }
+    });
+    return Array.from(map.values());
+  }, [allCountries]);
+
+  const stateOptions = useMemo(() => {
+    const map = new Map<string, { value: string; label: string }>();
+    availableStates.forEach((s) => {
+      if (!map.has(s.name.toLowerCase())) {
+        map.set(s.name.toLowerCase(), { value: s.name, label: s.name });
+      }
+    });
+    if (formData.state && !map.has(formData.state.toLowerCase())) {
+      map.set(formData.state.toLowerCase(), { value: formData.state, label: formData.state });
+    }
+    return Array.from(map.values());
+  }, [availableStates, formData.state]);
+
+  const cityOptions = useMemo(() => {
+    const map = new Map<string, { value: string; label: string }>();
+    availableCities.forEach((c) => {
+      if (!map.has(c.name.toLowerCase())) {
+        map.set(c.name.toLowerCase(), { value: c.name, label: c.name });
+      }
+    });
+    if (formData.city && !map.has(formData.city.toLowerCase())) {
+      map.set(formData.city.toLowerCase(), { value: formData.city, label: formData.city });
+    }
+    return Array.from(map.values());
+  }, [availableCities, formData.city]);
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError(null);
+  };
+
+  const fetchPincodeDetails = async (pin: string, explicitCountryIso?: string) => {
+    const cleanPin = pin.trim();
+    const iso = (explicitCountryIso || countryIsoCode || "IN").toUpperCase();
+
+    if (!cleanPin) {
+      setPincodeStatus(null);
+      setPincodeMessage("");
+      return;
+    }
+
+    if (iso === "IN") {
+      if (cleanPin.length !== 6 || !/^\d{6}$/.test(cleanPin)) {
+        setPincodeStatus(null);
+        setPincodeMessage("");
+        return;
+      }
+    } else {
+      if (cleanPin.length < 3) {
+        setPincodeStatus(null);
+        setPincodeMessage("");
+        return;
+      }
+    }
+
+    setPincodeLoading(true);
+    setPincodeStatus(null);
+    setPincodeMessage("");
+
+    const res = await pincodeApi.lookup(cleanPin, iso);
+    setPincodeLoading(false);
+
+    if (res.success) {
+      setPincodeStatus("success");
+      const city = res.city || res.district || "";
+      const state = res.state || "";
+      const locationText = [city, state].filter(Boolean).join(", ");
+      setPincodeMessage(locationText ? `Auto-filled: ${locationText}` : "Auto-filled");
+
+      // Match state with available states for clean dropdown selection
+      let stateToSet = res.state || "";
+      if (res.state || res.stateAbbreviation) {
+        const statesForCountry = State.getStatesOfCountry(iso);
+        const matchedState = statesForCountry.find(
+          (s) =>
+            (res.state && s.name.toLowerCase() === res.state.toLowerCase()) ||
+            (res.stateAbbreviation && s.isoCode.toLowerCase() === res.stateAbbreviation.toLowerCase()) ||
+            (res.state && s.isoCode.toLowerCase() === res.state.toLowerCase())
+        );
+        if (matchedState) {
+          stateToSet = matchedState.name;
+        }
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        city: city || prev.city,
+        state: stateToSet || prev.state,
+        country: prev.country,
+      }));
+    } else {
+      setPincodeStatus("error");
+      setPincodeMessage(res.message || "No records found for this postal code");
+    }
+  };
+
+  const handlePincodeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    if (isIndia) {
+      value = value.replace(/\D/g, "").slice(0, 6);
+    } else {
+      value = value.replace(/[^a-zA-Z0-9 -]/g, "").slice(0, 10);
+    }
+    setFormData((prev) => ({ ...prev, pincode: value }));
+
+    if (pincodeDebounceRef.current) {
+      clearTimeout(pincodeDebounceRef.current);
+    }
+
+    if (isIndia) {
+      if (value.length === 6) {
+        fetchPincodeDetails(value, "IN");
+      } else {
+        setPincodeStatus(null);
+        setPincodeMessage("");
+      }
+    } else if (countryIsoCode === "US") {
+      const clean = value.trim();
+      if (/^\d{5}$/.test(clean)) {
+        fetchPincodeDetails(clean, "US");
+      } else if (clean.length < 5) {
+        setPincodeStatus(null);
+        setPincodeMessage("");
+      } else {
+        pincodeDebounceRef.current = setTimeout(() => {
+          fetchPincodeDetails(clean, "US");
+        }, 600);
+      }
+    } else {
+      const clean = value.trim();
+      if (clean.length >= 3) {
+        pincodeDebounceRef.current = setTimeout(() => {
+          fetchPincodeDetails(clean, countryIsoCode);
+        }, 600);
+      } else {
+        setPincodeStatus(null);
+        setPincodeMessage("");
+      }
+    }
+  };
+
+  const handlePincodeBlur = () => {
+    const clean = formData.pincode.trim();
+    if (!clean || pincodeLoading) return;
+    if (isIndia && clean.length === 6 && pincodeStatus !== "success") {
+      fetchPincodeDetails(clean, "IN");
+    } else if (!isIndia && clean.length >= 3 && pincodeStatus !== "success") {
+      fetchPincodeDetails(clean, countryIsoCode);
+    }
+  };
+
+  const handlePincodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const clean = formData.pincode.trim();
+      if (clean) {
+        if (pincodeDebounceRef.current) clearTimeout(pincodeDebounceRef.current);
+        fetchPincodeDetails(clean, countryIsoCode);
+      }
+    }
   };
 
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -710,59 +942,123 @@ export default function RegisterBusinessPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#172525] mb-1.5">City</label>
-                      <input
-                        type="text"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        placeholder="Mumbai"
-                        className="w-full h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                        data-testid="input-org-city"
+                      <label className="block text-xs font-bold text-[#172525] mb-1.5">Country</label>
+                      <SearchableSelect
+                        options={countryOptions}
+                        value={formData.country}
+                        onChange={(val) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            country: val,
+                            state: "",
+                            city: "",
+                            pincode: "",
+                          }));
+                          setPincodeStatus(null);
+                          setPincodeMessage("");
+                        }}
+                        placeholder="Select Country"
+                        searchPlaceholder="Type to search country (e.g. India, US)..."
+                        inputHeightClass="h-11"
+                        testId="input-org-country"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#172525] mb-1.5">State</label>
-                      <input
-                        type="text"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        placeholder="Maharashtra"
-                        className="w-full h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                        data-testid="input-org-state"
-                      />
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs font-bold text-[#172525]">
+                          {postalCodeLabel} <span className="text-[10px] text-slate-400 font-normal">(Auto-fetch)</span>
+                        </label>
+                        {pincodeLoading && (
+                          <span className="text-[10px] font-semibold text-[#035352] flex items-center gap-1">
+                            <Loader2 className="size-3 animate-spin" /> Auto-fetching...
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="pincode"
+                          value={formData.pincode}
+                          onChange={handlePincodeChange}
+                          onBlur={handlePincodeBlur}
+                          onKeyDown={handlePincodeKeyDown}
+                          maxLength={isIndia ? 6 : 10}
+                          placeholder={postalCodePlaceholder}
+                          className={`w-full h-11 pl-5 pr-10 rounded-full border bg-white text-sm text-[#172525] shadow-sm focus:outline-none focus:ring-2 transition-all ${
+                            pincodeStatus === "success"
+                              ? "border-emerald-400 focus:border-emerald-600 focus:ring-emerald-500/20"
+                              : pincodeStatus === "error"
+                              ? "border-amber-400 focus:border-amber-500 focus:ring-amber-500/20"
+                              : "border-slate-200 focus:border-[#035352] focus:ring-[#035352]/20"
+                          }`}
+                          data-testid="input-org-pincode"
+                        />
+                        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                          {pincodeLoading ? (
+                            <Loader2 className="size-4 animate-spin text-[#035352]" />
+                          ) : pincodeStatus === "success" ? (
+                            <CheckCircle2 className="size-4 text-emerald-600" />
+                          ) : pincodeStatus === "error" ? (
+                            <AlertCircle className="size-4 text-amber-500" />
+                          ) : formData.pincode.trim().length >= 3 ? (
+                            <button
+                              type="button"
+                              onClick={() => fetchPincodeDetails(formData.pincode)}
+                              title="Lookup postal code"
+                              className="text-slate-400 hover:text-[#035352] transition-colors p-0.5 rounded cursor-pointer"
+                            >
+                              <Search className="size-3.5" />
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
+                      {pincodeMessage && (
+                        <p
+                          className={`mt-1.5 text-xs font-semibold flex items-center gap-1 ${
+                            pincodeStatus === "success" ? "text-emerald-700" : "text-amber-600"
+                          }`}
+                        >
+                          {pincodeStatus === "success" && <Check className="size-3.5 shrink-0" />}
+                          <span>{pincodeMessage}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#172525] mb-1.5">Pincode / Postal Code</label>
-                      <input
-                        type="text"
-                        name="pincode"
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                        placeholder="400001"
-                        className="w-full h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                        data-testid="input-org-pincode"
+                      <label className="block text-xs font-bold text-[#172525] mb-1.5">State / Province</label>
+                      <SearchableSelect
+                        options={stateOptions}
+                        value={formData.state}
+                        onChange={(val) => {
+                          setFormData((prev) => ({ ...prev, state: val, city: "" }));
+                        }}
+                        placeholder={stateOptions.length > 0 ? "Select State / Province" : "Enter State"}
+                        searchPlaceholder="Type to search state..."
+                        inputHeightClass="h-11"
+                        testId="input-org-state"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#172525] mb-1.5">Country</label>
-                      <input
-                        type="text"
-                        name="country"
-                        value={formData.country}
-                        onChange={handleInputChange}
-                        placeholder="India"
-                        className="w-full h-11 px-5 rounded-full border border-slate-200 bg-white text-sm text-[#172525] shadow-sm focus:border-[#035352] focus:outline-none focus:ring-2 focus:ring-[#035352]/20 transition-all"
-                        data-testid="input-org-country"
+                      <label className="block text-xs font-bold text-[#172525] mb-1.5">City</label>
+                      <SearchableSelect
+                        options={cityOptions}
+                        value={formData.city}
+                        onChange={(val) => {
+                          setFormData((prev) => ({ ...prev, city: val }));
+                        }}
+                        placeholder={cityOptions.length > 0 ? "Select City" : "Enter City"}
+                        searchPlaceholder="Type to search city..."
+                        inputHeightClass="h-11"
+                        testId="input-org-city"
                       />
                     </div>
                   </div>
+
+
 
                   <div>
                     <label className="block text-xs font-bold text-[#172525] mb-1.5">System Timezone</label>

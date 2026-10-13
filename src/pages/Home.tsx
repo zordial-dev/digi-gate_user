@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useInView } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -14,7 +14,6 @@ import {
   Globe2,
   Headphones,
   LockKeyhole,
-  Menu,
   MonitorSmartphone,
   Network,
   PanelTop,
@@ -26,17 +25,10 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MarketingLayout } from "@/components/layout/MarketingLayout";
+import { LogoMark } from "@/components/layout/MarketingHeader";
 
 type IconComponent = any;
-
-const navItems = [
-  ["Why Digi-Gate", "#why-digi-gate", "nav-link-why-digi-gate"],
-  ["Benefits", "#benefits", "nav-link-benefits"],
-  ["How It Works", "#how-it-works", "nav-link-how-it-works"],
-  ["Solutions", "#solutions", "nav-link-solutions"],
-  ["Security", "#security", "nav-link-security"],
-  ["FAQ", "#faq", "nav-link-faq"],
-] as const;
 
 const problemCards: { title: string; copy: string; icon: IconComponent }[] = [
   { title: "Paper registers", copy: "Paper records and repetitive entry procedures create friction at the point of arrival.", icon: FileCheck2 },
@@ -83,26 +75,6 @@ const howSteps: { step: string; title: string; copy: string; icon: IconComponent
   { step: "03", title: "Relevant teams stay informed", copy: "Hosts and relevant teams have the information they need to manage the visit efficiently.", icon: Bell },
   { step: "04", title: "Your organisation has better oversight", copy: "Management and teams have a clearer view of visitor activity and workplace operations.", icon: Eye },
 ];
-
-function LogoMark({ light = false, testId }: { light?: boolean; testId: string }) {
-  return (
-    <span className="flex items-center gap-2.5" data-testid={testId}>
-      <img
-        src="/digigate_logo.png"
-        alt="DigiGate Logo"
-        className="h-9 sm:h-10 w-auto object-contain rounded-md"
-      />
-      <div className="flex flex-col text-left">
-        <span className={`font-heading text-lg sm:text-xl font-black tracking-tight leading-none ${light ? "text-white" : "text-[#035352]"}`}>
-          Digi<span className={light ? "text-[#F3E8BC]" : "text-[#05706f]"}>-Gate</span>
-        </span>
-        <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest leading-none mt-1 ${light ? "text-teal-200" : "text-[#035352]/70"}`}>
-          Visitor System
-        </span>
-      </div>
-    </span>
-  );
-}
 
 function Reveal({
   children,
@@ -151,21 +123,21 @@ function SectionIntro({ eyebrow, title, copy }: { eyebrow: string; title: string
         {eyebrow}
       </motion.p>
       <motion.h2
-        className="mt-4 font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-[#172525]"
+        className="mt-2.5 sm:mt-3.5 font-heading text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight tracking-tight text-[#172525]"
         data-testid={`section-heading-${id}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 0.5, delay: isInView ? 0.05 : 0, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 18 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+        transition={{ duration: 0.45, delay: isInView ? 0.05 : 0, ease: [0.22, 1, 0.36, 1] }}
       >
         {title}
       </motion.h2>
       {copy && (
         <motion.p
-          className="mt-5 max-w-2xl text-base leading-8 text-[#4a5d5c] sm:text-lg"
+          className="mt-2.5 sm:mt-3.5 max-w-2xl text-xs sm:text-sm sm:leading-relaxed text-[#4a5d5c]"
           data-testid={`section-copy-${id}`}
-          initial={{ opacity: 0, y: 15 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-          transition={{ duration: 0.5, delay: isInView ? 0.1 : 0, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+          transition={{ duration: 0.45, delay: isInView ? 0.1 : 0, ease: [0.22, 1, 0.36, 1] }}
         >
           {copy}
         </motion.p>
@@ -176,12 +148,12 @@ function SectionIntro({ eyebrow, title, copy }: { eyebrow: string; title: string
 
 function ConceptualArrivalVisual() {
   return (
-    <div className="relative mx-auto aspect-[0.96] w-full max-w-[600px]" data-testid="hero-conceptual-visual">
+    <div className="relative mx-auto w-full max-w-[520px] pt-2 pb-6" data-testid="hero-conceptual-visual">
       {/* Background Glows */}
       <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-[#035352]/20 via-[#05706f]/15 to-[#F3E8BC]/25 blur-3xl -z-10" />
 
       {/* Main Terminal Frame */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-[#023e3d] via-[#035352] to-[#012524] p-5 sm:p-7 shadow-[0_25px_60px_-15px_rgba(3,83,82,0.35)]">
+      <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-[#023e3d] via-[#035352] to-[#012524] p-5 sm:p-6 shadow-[0_20px_50px_-15px_rgba(3,83,82,0.35)]">
 
         {/* Terminal Header Bar */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -284,7 +256,7 @@ function ConceptualArrivalVisual() {
 
       {/* Floating Notification Cards */}
       <motion.div
-        className="absolute -left-3 top-[18%] hidden sm:flex items-center gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-xl shadow-[#035352]/10 backdrop-blur-xl"
+        className="absolute -left-4 top-10 hidden sm:flex items-center gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-xl shadow-[#035352]/10 backdrop-blur-xl z-20"
         animate={{ y: [0, -6, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
         data-testid="hero-floating-arrival-card"
@@ -302,7 +274,7 @@ function ConceptualArrivalVisual() {
       </motion.div>
 
       <motion.div
-        className="absolute -right-3 bottom-[12%] hidden sm:flex items-center gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-xl shadow-[#035352]/10 backdrop-blur-xl"
+        className="absolute -right-4 -bottom-1 hidden sm:flex items-center gap-3 rounded-2xl border border-white/80 bg-white/95 p-3 shadow-xl shadow-[#035352]/10 backdrop-blur-xl z-20"
         animate={{ y: [0, 6, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         data-testid="hero-floating-oversight-card"
@@ -422,77 +394,225 @@ function ConceptualProductPreview() {
   );
 }
 
+function SolutionsSwiper() {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % useCases.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  const current = useCases[currentIndex];
+  const CurrentIcon = current.icon;
+
+  return (
+    <div
+      className="relative mt-6 mx-auto max-w-4xl w-full"
+      data-testid="solutions-swiper"
+    >
+      {/* Featured Swiping Card */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-10 shadow-xl shadow-[#035352]/[0.08]">
+        <div className="min-h-[160px] sm:min-h-[140px] flex items-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 70, scale: 0.98 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -70, scale: 0.98 }}
+              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-xs font-bold text-[#05706f] bg-[#e6f0f0] px-3 py-1 rounded-full">
+                    Sector 0{currentIndex + 1} / 0{useCases.length}
+                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#4a5d5c]">
+                    Customized Architecture
+                  </span>
+                </div>
+
+                <h3 className="mt-4 font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#172525]">
+                  {current.title}
+                </h3>
+                <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-[#4a5d5c] max-w-xl">
+                  {current.copy}
+                </p>
+              </div>
+
+              <div className="flex size-18 sm:size-22 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#023e3d] to-[#035352] text-[#F3E8BC] shadow-xl shadow-[#035352]/25 ring-6 sm:ring-8 ring-[#e6f0f0]">
+                <CurrentIcon className="size-8 sm:size-10 stroke-[1.75]" />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SolutionInteractiveFlow() {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const pillars = [
+    {
+      id: "simpler",
+      num: "01",
+      badge: "Simpler Operations",
+      title: "Less manual work.",
+      tagline: "Zero paper registers. Zero reception friction.",
+      copy: "Replace handwritten logbooks with automated contactless QR check-ins. Visitors complete arrival details in under 20 seconds with zero app installation.",
+      icon: Zap,
+      metric: "18s",
+      metricLabel: "Avg entry time",
+      features: [
+        "Instant smartphone browser launch with zero app install",
+        "Automated OTP verification prevents fake log entries",
+        "Smart auto-complete host directory to pick employees effortlessly",
+      ],
+    },
+    {
+      id: "smarter",
+      num: "02",
+      badge: "Smarter Visibility",
+      title: "A clearer view.",
+      tagline: "Total oversight of daily visitor flow.",
+      copy: "Hosts receive instant alerts via WhatsApp and SMS the moment their guest checks in. Management maintains a live view of campus occupancy.",
+      icon: Eye,
+      metric: "0.4s",
+      metricLabel: "Host alert dispatch",
+      features: [
+        "Sub-second multi-channel notifications via WhatsApp and SMS",
+        "One-tap host acknowledgment keeps visitors informed in real time",
+        "Live on-site occupancy roster for facility safety and evacuation drills",
+      ],
+    },
+    {
+      id: "professional",
+      num: "03",
+      badge: "More Professional",
+      title: "A better welcome.",
+      tagline: "A modern impression from minute one.",
+      copy: "Deliver a polished arrival experience with customized digital badges, clear directions, and secure credentials tailored to your workplace.",
+      icon: Sparkles,
+      metric: "100%",
+      metricLabel: "Visitor privacy protection",
+      features: [
+        "Branded digital gate pass with dynamic security verification timestamps",
+        "Complete visitor data confidentiality with TLS 1.3 encryption",
+        "Automated GDPR-compliant data retention and purge schedules",
+      ],
+    },
+  ];
+
+  const current = pillars[activeTab];
+
+  return (
+    <div className="mt-8" data-testid="solution-interactive-showcase">
+      {/* Horizontal Pill Selector */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 border-b border-slate-200 pb-4">
+        {pillars.map((pillar, index) => {
+          const isActive = activeTab === index;
+          const Icon = pillar.icon;
+          return (
+            <button
+              key={pillar.id}
+              onClick={() => setActiveTab(index)}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+                isActive
+                  ? "bg-[#035352] text-white shadow-md shadow-[#035352]/20"
+                  : "bg-white text-[#4a5d5c] hover:text-[#172525] border border-slate-200/80 hover:border-[#035352]/30"
+              }`}
+            >
+              <Icon className="size-3.5" />
+              <span>{pillar.badge}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active Content - Open Editorial Presentation */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.3 }}
+          className="mt-6 space-y-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#05706f]">
+                {current.num} • {current.tagline}
+              </span>
+              <h3 className="font-heading text-2xl sm:text-3xl font-extrabold text-[#172525] mt-1">
+                {current.title}
+              </h3>
+            </div>
+            <div className="flex items-center gap-3 border-l-2 border-[#035352] pl-4">
+              <div>
+                <p className="font-mono text-2xl sm:text-3xl font-extrabold text-[#035352]">
+                  {current.metric}
+                </p>
+                <p className="text-[11px] font-semibold text-[#4a5d5c]">
+                  {current.metricLabel}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-sm sm:text-base text-[#4a5d5c] leading-relaxed max-w-3xl">
+            {current.copy}
+          </p>
+
+          <div className="pt-2 space-y-2.5 max-w-2xl">
+            {current.features.map((feat) => (
+              <div key={feat} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-[#172525]">
+                <span className="flex size-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+                  <Check className="size-3 stroke-[3]" />
+                </span>
+                <span>{feat}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 18);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#F4F7F6] text-[#172525]" data-testid="digi-gate-marketing-site">
-      <header className={`fixed inset-x-0 top-0 z-50 bg-white border-b border-slate-200/90 transition-shadow duration-300 gpu-layer ${scrolled ? "shadow-md shadow-[#035352]/10" : "shadow-sm"}`} data-testid="nav-bar">
-        <div className="mx-auto flex h-[68px] sm:h-[76px] max-w-7xl items-center justify-between px-3.5 sm:px-6 lg:px-8">
-          <a href="#top" aria-label="Digi-Gate home" data-testid="nav-brand-link"><LogoMark testId="brand-logo-header" /></a>
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation" data-testid="desktop-navigation">
-            {navItems.map(([label, href, testId]) => <a key={href} href={href} className="text-sm font-semibold text-[#4a5d5c] hover:text-[#035352] transition-colors" data-testid={testId}>{label}</a>)}
-          </nav>
-          <div className="hidden items-center gap-3 lg:flex">
-            <Button onClick={() => navigate("/register")} className="h-10 rounded-full bg-[#035352] px-6 text-xs font-bold text-white shadow-md shadow-[#035352]/20 hover:bg-[#023e3d] transition-all flex items-center gap-2 cursor-pointer" data-testid="nav-cta-register-business">
-              <Building2 className="size-4 text-[#F3E8BC]" /> Register Business
-            </Button>
-          </div>
-          <button className="flex size-10 items-center justify-center rounded-xl bg-[#035352] text-white shadow-sm hover:bg-[#023e3d] active:scale-95 transition-all lg:hidden cursor-pointer" onClick={() => setMobileMenuOpen((current) => !current)} aria-label="Toggle navigation" data-testid="mobile-menu-toggle-button">
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.nav initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="border-t border-slate-200 bg-white px-5 py-5 lg:hidden" aria-label="Mobile navigation" data-testid="mobile-navigation">
-              <div className="flex flex-col gap-1">
-                {navItems.map(([label, href, testId]) => <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold text-[#4a5d5c] hover:bg-[#e6f0f0] hover:text-[#035352]" data-testid={`${testId}-mobile`}>{label}</a>)}
-              </div>
-              <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4">
-                <Button onClick={() => { setMobileMenuOpen(false); navigate("/register"); }} className="w-full h-11 rounded-full bg-[#035352] font-bold text-white flex items-center justify-center gap-2" data-testid="nav-cta-register-business-mobile">
-                  <Building2 className="size-4 text-[#F3E8BC]" /> Register Business
-                </Button>
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
-      </header>
-
-      <main id="top">
-        <section className="relative isolate overflow-hidden bg-[#F4F7F6] pt-32 sm:pt-40 lg:pt-44" data-testid="hero-section">
+    <MarketingLayout>
+      <div className="w-full" data-testid="digi-gate-marketing-site">
+        <section className="relative isolate overflow-hidden bg-[#F4F7F6] pt-12 sm:pt-16 lg:pt-20" data-testid="hero-section">
           {/* Subtle modern mesh ambient lights */}
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_14%,rgba(5,112,111,.14),transparent_35%),radial-gradient(circle_at_12%_25%,rgba(3,83,82,.08),transparent_30%)]" />
 
-          <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 sm:px-6 lg:grid-cols-[1fr_1fr] lg:gap-12 lg:px-8 lg:pb-28">
+          <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 pb-6 sm:px-6 sm:pb-8 lg:grid-cols-[1fr_1fr] lg:gap-10 lg:px-8 lg:pb-10">
             <Reveal className="relative z-10 max-w-2xl">
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-[4.25rem] font-extrabold leading-[1.18] sm:leading-[1.12] tracking-tight text-[#172525]" data-testid="hero-headline">
+              <h1 className="font-heading text-3xl sm:text-5xl lg:text-[3.8rem] font-extrabold leading-[1.18] sm:leading-[1.1] tracking-tight text-[#172525]" data-testid="hero-headline">
                 A smarter way to manage <span className="bg-gradient-to-r from-[#035352] via-[#05706f] to-[#023e3d] bg-clip-text text-transparent underline decoration-[#F3E8BC] decoration-4 underline-offset-8">every visitor</span>.
               </h1>
 
-              <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-[#4a5d5c]" data-testid="hero-supporting-text">
+              <p className="mt-5 max-w-xl text-base sm:text-lg leading-relaxed text-[#4a5d5c]" data-testid="hero-supporting-text">
                 Digi-Gate replaces traditional paper registers with contactless QR check-ins, instant host alerts, and verified digital gate passes for modern organisations.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
                 <Button onClick={() => navigate("/register")} size="lg" className="h-12 rounded-full bg-[#035352] hover:bg-[#023e3d] px-8 text-sm font-bold text-white shadow-lg shadow-[#035352]/20 hover:-translate-y-0.5 flex items-center justify-center gap-2.5 transition-all cursor-pointer" data-testid="hero-cta-register-business">
                   <Building2 className="size-4 text-[#F3E8BC]" /> Register Business
                 </Button>
               </div>
 
               {/* Trust Badges */}
-              <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-[#4a5d5c]" data-testid="hero-trust-line">
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-[#4a5d5c]" data-testid="hero-trust-line">
                 <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-emerald-600" /> Enterprise-grade security</span>
                 <span className="size-1 rounded-full bg-[#05706f]" />
                 <span className="flex items-center gap-1.5"><Zap className="size-3.5 text-amber-500" /> Instant host notification</span>
@@ -501,15 +621,15 @@ export default function Home() {
               </div>
             </Reveal>
 
-            <Reveal className="relative mt-2 lg:mt-0" delay={0.15}>
+            <Reveal className="relative" delay={0.15}>
               <ConceptualArrivalVisual />
             </Reveal>
           </div>
 
-          <div className="border-y border-slate-200 bg-white/70" data-testid="hero-trust-strip">
-            <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="border-y border-slate-200 bg-white/80" data-testid="hero-trust-strip">
+            <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4a5d5c]">Trusted for modern workplace arrivals & security</p>
-              <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-[#4a5d5c]/80">
+              <div className="flex flex-wrap gap-x-6 gap-y-1.5 text-xs font-semibold text-[#4a5d5c]/80">
                 <span>Corporate Workplaces</span>
                 <span>Tech Parks</span>
                 <span>Educational Campuses</span>
@@ -519,94 +639,109 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="why-digi-gate" className="bg-white py-24 lg:py-32" data-testid="problem-section">
+        <section id="why-digi-gate" className="scroll-mt-20 sm:scroll-mt-24 bg-white py-6 sm:py-8" data-testid="problem-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="The old way" title="Your visitor experience should be better." copy="Traditional visitor management creates friction where your organisation should feel most welcoming. Paper records, manual routines and limited visibility make everyday arrivals harder than they need to be." />
             </Reveal>
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5 items-stretch" data-testid="problem-cards-grid">
-              {problemCards.map(({ title, copy, icon: Icon }, index) => (
-                <Reveal key={title} delay={index * 0.06} className="h-full">
-                  <div className="group flex h-full min-h-[260px] flex-col justify-between rounded-2xl border border-slate-200 bg-[#F4F7F6] p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#035352]/40 hover:shadow-xl hover:shadow-[#035352]/[0.07]" data-testid={`problem-card-${title.toLowerCase().replaceAll(" ", "-")}`}>
-                    <div>
-                      <span className="flex size-11 items-center justify-center rounded-xl bg-white text-[#05706f] shadow-sm ring-1 ring-slate-200 transition-colors duration-300 group-hover:bg-[#035352] group-hover:text-[#F3E8BC]">
-                        <Icon className="size-5" />
-                      </span>
-                      <h3 className="mt-6 font-heading text-lg font-bold tracking-tight text-[#172525]">{title}</h3>
-                      <p className="mt-3 text-sm leading-6 text-[#4a5d5c]">{copy}</p>
-                    </div>
-                  </div>
-                </Reveal>
+
+            {/* Seamless interconnected friction stream (no bulky grid cards) */}
+            <div className="mt-6 flex flex-wrap items-center gap-2.5 sm:gap-3" data-testid="problem-points-flow">
+              {problemCards.map(({ title, icon: Icon }, index) => (
+                <div
+                  key={title}
+                  className="flex items-center gap-2.5 rounded-full border border-slate-200/90 bg-[#F4F7F6] px-4 py-2 text-xs font-semibold text-[#172525] transition-colors hover:border-[#035352]/40 hover:bg-white"
+                >
+                  <span className="flex size-6 items-center justify-center rounded-full bg-white text-[#05706f] shadow-sm">
+                    <Icon className="size-3.5" />
+                  </span>
+                  <span>{title}</span>
+                  <span className="text-[10px] text-slate-400 font-mono">0{index + 1}</span>
+                </div>
               ))}
             </div>
-            <Reveal className="mt-24 flex flex-col justify-between gap-6 rounded-3xl bg-[#e6f0f0] p-7 sm:flex-row sm:items-center sm:p-10 border border-[#035352]/15" delay={0.1}>
+
+            <Reveal className="mt-5 flex flex-col justify-between gap-3.5 rounded-2xl bg-[#e6f0f0] p-4 sm:flex-row sm:items-center sm:p-5 border border-[#035352]/15" delay={0.1}>
               <div>
                 <p className="eyebrow">The shift</p>
-                <h3 className="mt-3 font-heading text-2xl font-bold tracking-[-0.04em] text-[#035352] sm:text-3xl" data-testid="problem-transition-heading">Digi-Gate changes that.</h3>
+                <h3 className="mt-0.5 font-heading text-base font-bold tracking-[-0.04em] text-[#035352] sm:text-lg" data-testid="problem-transition-heading">Digi-Gate changes that.</h3>
               </div>
-              <a href="#benefits" className="group inline-flex items-center gap-2 text-sm font-bold text-[#035352]" data-testid="problem-transition-link">
+              <Link to="/benefits" className="group inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#035352] cursor-pointer" data-testid="problem-transition-link">
                 See what better looks like <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </a>
+              </Link>
             </Reveal>
           </div>
         </section>
 
-        <section className="bg-[#F4F7F6] py-24 lg:py-32" data-testid="solution-section">
+        <section className="bg-[#F4F7F6] py-6 sm:py-8" data-testid="solution-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="The Digi-Gate solution" title="Bring your visitor management into a modern digital system." copy="Digi-Gate gives organisations a centralised and professional way to manage visitors, hosts and visit activity — helping teams work smarter while creating a better experience for every guest." />
             </Reveal>
-            <div className="mt-14 grid gap-5 lg:grid-cols-3 items-stretch" data-testid="solution-benefits-grid">
-              <Reveal className="h-full">
-                <div className="flex h-full min-h-[300px] flex-col justify-between rounded-3xl bg-[#035352] p-8 text-white shadow-xl shadow-[#035352]/20 sm:p-10" data-testid="solution-benefit-simpler">
-                  <div>
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-white/10 text-[#F3E8BC]"><Zap className="size-6" /></span>
-                    <p className="mt-12 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#F3E8BC]">01 / Simpler</p>
-                    <h3 className="mt-3 font-heading text-2xl font-bold tracking-[-0.04em]">Less manual work.</h3>
-                  </div>
-                  <p className="mt-4 text-sm leading-7 text-teal-100/80">Reduce manual visitor management and unnecessary paperwork.</p>
-                </div>
-              </Reveal>
-              <Reveal delay={0.08} className="h-full">
-                <div className="flex h-full min-h-[300px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10" data-testid="solution-benefit-smarter">
-                  <div>
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-[#e6f0f0] text-[#035352]"><Eye className="size-6" /></span>
-                    <p className="mt-12 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#05706f]">02 / Smarter</p>
-                    <h3 className="mt-3 font-heading text-2xl font-bold tracking-[-0.04em] text-[#172525]">A clearer view.</h3>
-                  </div>
-                  <p className="mt-4 text-sm leading-7 text-[#4a5d5c]">Give teams better visibility into visitor activity and the day ahead.</p>
-                </div>
-              </Reveal>
-              <Reveal delay={0.16} className="h-full">
-                <div className="flex h-full min-h-[300px] flex-col justify-between rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10" data-testid="solution-benefit-professional">
-                  <div>
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#10B981]"><Sparkles className="size-6" /></span>
-                    <p className="mt-12 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#10B981]">03 / More professional</p>
-                    <h3 className="mt-3 font-heading text-2xl font-bold tracking-[-0.04em] text-[#172525]">A better welcome.</h3>
-                  </div>
-                  <p className="mt-4 text-sm leading-7 text-[#4a5d5c]">Create a modern experience from the moment a visitor arrives.</p>
-                </div>
-              </Reveal>
-            </div>
+            <Reveal delay={0.08}>
+              <SolutionInteractiveFlow />
+            </Reveal>
           </div>
         </section>
 
-        <section id="benefits" className="bg-white py-24 lg:py-32" data-testid="benefits-section">
+        <section id="benefits" className="scroll-mt-20 sm:scroll-mt-24 overflow-hidden bg-white py-6 sm:py-8" data-testid="benefits-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="Built for impact" title="Why organisations choose Digi-Gate" copy="A better visitor experience is not just nicer for guests. It gives every team a clearer, more confident way to work." />
             </Reveal>
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-stretch" data-testid="benefit-cards-grid">
-              {benefits.map(({ title, copy, icon: Icon }, index) => (
-                <Reveal key={title} delay={(index % 4) * 0.05} className="h-full">
-                  <div className="group flex h-full min-h-[220px] flex-col justify-between rounded-2xl border border-slate-200 bg-[#F4F7F6] p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#035352]/40 hover:shadow-xl hover:shadow-[#035352]/[0.07]" data-testid={`benefit-card-${title.toLowerCase().replaceAll(" ", "-")}`}>
-                    <div>
-                      <div className="flex size-10 items-center justify-center rounded-xl bg-white text-[#05706f] shadow-sm ring-1 ring-slate-200 transition-colors duration-300 group-hover:bg-[#035352] group-hover:text-[#F3E8BC]">
-                        <Icon className="size-5" />
-                      </div>
-                      <h3 className="mt-6 font-heading text-lg font-bold tracking-tight text-[#172525]">{title}</h3>
-                      <p className="mt-2.5 text-sm leading-6 text-[#4a5d5c]">{copy}</p>
+          </div>
+
+          {/* Single-line Smooth Revolving Circular Carousel */}
+          <div className="relative mt-6 sm:mt-8 w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]" data-testid="benefit-cards-revolving">
+            <div className="flex w-max gap-4 sm:gap-5 animate-marquee py-2">
+              {[...benefits, ...benefits].map(({ title, copy, icon: Icon }, index) => (
+                <div
+                  key={`${title}-${index}`}
+                  className="group flex w-[260px] sm:w-[310px] shrink-0 min-h-[160px] sm:min-h-[175px] flex-col items-start justify-between rounded-2xl border border-slate-200/90 bg-[#F4F7F6] p-4 sm:p-5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#035352]/40 hover:shadow-xl hover:shadow-[#035352]/[0.08] hover:bg-white cursor-pointer"
+                  data-testid={`benefit-card-${title.toLowerCase().replaceAll(" ", "-")}-${index}`}
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-[#05706f] shadow-sm ring-1 ring-slate-200 transition-colors duration-300 group-hover:bg-[#035352] group-hover:text-[#F3E8BC]">
+                    <Icon className="size-4.5" />
+                  </div>
+                  <div className="mt-3 w-full text-left">
+                    <h3 className="font-heading text-sm sm:text-base font-bold tracking-tight text-[#172525]">{title}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-[#4a5d5c]">{copy}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden bg-[#F4F7F6] py-8 sm:py-12" data-testid="how-it-works-section">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Reveal>
+              <SectionIntro
+                eyebrow="How it works"
+                title="Simple for your team. Simple for your visitors."
+                copy="A clear, connected arrival flow where each step leads naturally into the next."
+              />
+            </Reveal>
+
+            {/* Open 4-Stage Connected Progress */}
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" data-testid="how-it-works-steps">
+              {howSteps.map(({ step, title, copy, icon: StepIcon }, idx) => (
+                <Reveal key={step} delay={idx * 0.08}>
+                  <div className="space-y-3" data-testid={`how-it-works-step-${step}`}>
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 items-center justify-center rounded-xl bg-[#035352] text-[#F3E8BC] font-mono text-xs font-bold shadow">
+                        <StepIcon className="size-4" />
+                      </span>
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#05706f]">
+                        Stage 0{idx + 1}
+                      </span>
                     </div>
+                    <h3 className="font-heading text-base font-bold text-[#172525]">
+                      {title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#4a5d5c] leading-relaxed">
+                      {copy}
+                    </p>
                   </div>
                 </Reveal>
               ))}
@@ -614,93 +749,71 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-[#F4F7F6] py-24 lg:py-32" data-testid="how-it-works-section">
+        <section className="overflow-hidden bg-white py-6 sm:py-8" data-testid="who-benefits-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
-              <SectionIntro eyebrow="How it works" title="Simple for your team. Simple for your visitors." copy="A clear, considered flow that makes the arrival experience feel natural for everyone involved." />
+              <SectionIntro
+                eyebrow="For every team"
+                title="One solution. Benefits across your organisation."
+                copy="Empower every team with purpose-built visitor workflows and clear oversight."
+              />
             </Reveal>
-            <div className="relative mt-16 grid gap-8 md:grid-cols-4 items-stretch" data-testid="how-it-works-steps">
-              <div className="absolute left-[10%] right-[10%] top-8 hidden border-t border-dashed border-[#035352]/30 md:block" />
-              {howSteps.map(({ step, title, copy, icon: StepIcon }, index) => (
-                <Reveal key={step} delay={index * 0.08} className="h-full">
-                  <div className="relative z-10 flex h-full flex-col justify-start" data-testid={`how-it-works-step-${step}`}>
-                    <div className="flex size-16 items-center justify-center rounded-2xl border-4 border-[#F4F7F6] bg-[#035352] text-[#F3E8BC] shadow-lg shadow-[#035352]/20">
-                      <StepIcon className="size-6" />
-                    </div>
-                    <p className="mt-8 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#05706f]">{step}</p>
-                    <h3 className="mt-3 font-heading text-xl font-bold tracking-[-0.035em] text-[#172525]">{title}</h3>
-                    <p className="mt-3 max-w-sm text-sm leading-7 text-[#4a5d5c]">{copy}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
           </div>
-        </section>
 
-        <section className="bg-white py-24 lg:py-32" data-testid="who-benefits-section">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <Reveal>
-              <SectionIntro eyebrow="For every team" title="One solution. Benefits across your organisation." />
-            </Reveal>
-            <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-stretch" data-testid="organisation-benefits-grid">
+          <div className="relative mt-6 sm:mt-8 w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]" data-testid="organisation-benefits-revolving">
+            <div className="flex w-max gap-4 sm:gap-5 animate-marquee py-2">
               {[
                 ["Reception teams", "Less paperwork. Less repetitive work. More efficient visitor handling.", "01"],
                 ["Security teams", "Better visibility over visitor activity and organised records.", "02"],
                 ["Employees & hosts", "Stay informed when visitors arrive and manage visits more efficiently.", "03"],
                 ["Management", "Get a clearer view of visitor activity and workplace operations.", "04"],
                 ["Visitors", "Enjoy a smoother and more professional arrival experience.", "05"],
+                ["Reception teams", "Less paperwork. Less repetitive work. More efficient visitor handling.", "01"],
+                ["Security teams", "Better visibility over visitor activity and organised records.", "02"],
+                ["Employees & hosts", "Stay informed when visitors arrive and manage visits more efficiently.", "03"],
+                ["Management", "Get a clearer view of visitor activity and workplace operations.", "04"],
+                ["Visitors", "Enjoy a smoother and more professional arrival experience.", "05"],
               ].map(([title, copy, number], index) => (
-                <Reveal key={title} delay={index * 0.06} className="h-full">
-                  <div className={`group flex h-full min-h-48 flex-col justify-between rounded-2xl border border-slate-200 p-7 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#035352]/[0.07] ${index === 0 ? "bg-[#e6f0f0] border-[#035352]/20" : "bg-[#F4F7F6]"}`} data-testid={`organisation-benefit-${title.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and")}`}>
-                    <div className="flex items-center justify-between">
-                      <span className="flex size-10 items-center justify-center rounded-xl bg-white text-[#035352] shadow-sm"><span className="font-mono text-xs font-bold">{number}</span></span>
-                      <ArrowUpRight className="size-4 text-[#05706f] opacity-0 transition-opacity group-hover:opacity-100" />
-                    </div>
-                    <div>
-                      <h3 className="mt-8 font-heading text-lg font-bold tracking-tight text-[#172525]">{title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-[#4a5d5c]">{copy}</p>
-                    </div>
+                <div
+                  key={`${title}-${index}`}
+                  className="group flex w-[260px] sm:w-[310px] shrink-0 min-h-[160px] sm:min-h-[175px] flex-col items-start justify-between rounded-2xl border border-slate-200/90 bg-[#F4F7F6] p-4 sm:p-5 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#035352]/40 hover:shadow-xl hover:shadow-[#035352]/[0.08] hover:bg-white cursor-pointer"
+                  data-testid={`organisation-benefit-${title.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and")}-${index}`}
+                >
+                  <div className="flex w-full items-center justify-between">
+                    <span className="flex size-7.5 sm:size-8 items-center justify-center rounded-xl bg-white text-[#035352] shadow-sm ring-1 ring-slate-200 group-hover:bg-[#035352] group-hover:text-[#F3E8BC] transition-colors">
+                      <span className="font-mono text-xs font-bold">{number}</span>
+                    </span>
+                    <ArrowUpRight className="size-4 text-slate-300 transition-all group-hover:text-[#035352] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
-                </Reveal>
+                  <div className="mt-3 w-full text-left">
+                    <h3 className="font-heading text-sm sm:text-base font-bold tracking-tight text-[#172525] group-hover:text-[#035352] transition-colors">{title}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-[#4a5d5c]">{copy}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="solutions" className="bg-[#F4F7F6] py-24 lg:py-32" data-testid="use-cases-section">
+        <section id="solutions" className="scroll-mt-20 sm:scroll-mt-24 bg-[#F4F7F6] py-6 sm:py-8" data-testid="use-cases-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="Made to fit" title="Built for organisations of every kind." copy="Wherever people arrive, Digi-Gate helps create a visitor experience that feels considered, organised and ready for what is next." />
             </Reveal>
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-stretch" data-testid="use-cases-grid">
-              {useCases.map(({ title, copy, icon: Icon }, index) => (
-                <Reveal key={title} delay={(index % 4) * 0.05} className="h-full">
-                  <div className="group flex h-full min-h-[220px] flex-col justify-between rounded-2xl border border-slate-200/90 bg-white p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#035352]/40 hover:shadow-xl hover:shadow-[#035352]/[0.08]" data-testid={`use-case-card-${title.toLowerCase().replaceAll(" ", "-")}`}>
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <span className="flex size-11 items-center justify-center rounded-xl bg-[#e6f0f0] text-[#035352] shadow-sm ring-1 ring-[#035352]/10 transition-all duration-300 group-hover:bg-[#035352] group-hover:text-[#F3E8BC]">
-                          <Icon className="size-5" />
-                        </span>
-                        <ArrowUpRight className="size-4 text-slate-300 transition-all duration-300 group-hover:text-[#035352] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </div>
-                      <h3 className="mt-6 font-heading text-lg font-bold tracking-tight text-[#172525]">{title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-[#4a5d5c]">{copy}</p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+            <Reveal delay={0.1}>
+              <SolutionsSwiper />
+            </Reveal>
           </div>
         </section>
 
-        <section id="product-preview" className="overflow-hidden bg-white py-24 lg:py-32" data-testid="product-preview-section">
+        <section id="product-preview" className="scroll-mt-20 sm:scroll-mt-24 overflow-hidden bg-white py-6 sm:py-8" data-testid="product-preview-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-16 lg:grid-cols-[.8fr_1.2fr] lg:gap-24">
+            <div className="grid items-center gap-6 lg:grid-cols-[.85fr_1.15fr] lg:gap-10">
               <Reveal>
                 <p className="eyebrow">Product experience</p>
-                <h2 className="mt-4 font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-[#172525]" data-testid="product-preview-heading">Designed around the way your organisation works.</h2>
-                <p className="mt-5 max-w-xl text-base leading-8 text-[#4a5d5c] sm:text-lg" data-testid="product-preview-copy">This conceptual interface preview shows how a modern visitor-management experience can bring together visitor information, host awareness, visit activity and organisational oversight.</p>
-                <div className="mt-9 space-y-4" data-testid="product-preview-feature-list">
+                <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-[#172525]" data-testid="product-preview-heading">Designed around the way your organisation works.</h2>
+                <p className="mt-2.5 max-w-xl text-xs sm:text-sm leading-6 text-[#4a5d5c]" data-testid="product-preview-copy">This conceptual interface preview shows how a modern visitor-management experience can bring together visitor information, host awareness, visit activity and organisational oversight.</p>
+                <div className="mt-4 space-y-2.5" data-testid="product-preview-feature-list">
                   {[
                     ["Visitor information", "Keep the right information in view.", FileCheck2],
                     ["Host awareness", "Help relevant teams stay informed.", Bell],
@@ -709,18 +822,18 @@ export default function Home() {
                   ].map(([title, copy, Icon]) => {
                     const PreviewIcon = Icon as IconComponent;
                     return (
-                      <div key={title as string} className="flex items-center gap-4" data-testid={`product-preview-feature-${(title as string).toLowerCase().replaceAll(" ", "-")}`}>
-                        <span className="flex size-10 items-center justify-center rounded-xl bg-[#e6f0f0] text-[#035352]"><PreviewIcon className="size-4" /></span>
+                      <div key={title as string} className="flex items-center gap-3" data-testid={`product-preview-feature-${(title as string).toLowerCase().replaceAll(" ", "-")}`}>
+                        <span className="flex size-7 items-center justify-center rounded-lg bg-[#e6f0f0] text-[#035352]"><PreviewIcon className="size-3.5" /></span>
                         <div>
-                          <p className="text-sm font-bold text-[#172525]">{title as string}</p>
-                          <p className="mt-1 text-xs text-[#4a5d5c]">{copy as string}</p>
+                          <p className="text-xs font-bold text-[#172525]">{title as string}</p>
+                          <p className="text-[11px] text-[#4a5d5c]">{copy as string}</p>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <Button onClick={() => navigate("/register")} className="mt-10 h-12 px-7 rounded-full bg-[#035352] font-bold hover:bg-[#023e3d] text-white shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer" data-testid="product-preview-cta">
-                  <Building2 className="size-4 text-[#F3E8BC]" /> Register Your Business
+                <Button onClick={() => navigate("/register")} className="mt-5 h-10 px-6 rounded-full bg-[#035352] font-bold hover:bg-[#023e3d] text-white text-xs shadow-md shadow-[#035352]/20 flex items-center gap-2 cursor-pointer" data-testid="product-preview-cta">
+                  <Building2 className="size-3.5 text-[#F3E8BC]" /> Register Your Business
                 </Button>
               </Reveal>
               <Reveal delay={0.1}>
@@ -730,124 +843,116 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="security" className="relative overflow-hidden bg-[#022928] py-24 text-white lg:py-32" data-testid="trust-section">
+        <section id="security" className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden bg-[#022928] py-8 sm:py-12 text-white" data-testid="trust-section">
           <div className="absolute right-[-8rem] top-[-10rem] size-[32rem] rounded-full bg-[#05706f]/25 blur-3xl pointer-events-none" />
           <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-14 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
-              <Reveal>
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+              <Reveal className="max-w-xl">
                 <p className="eyebrow text-[#F3E8BC]">Trust & control</p>
-                <h2 className="mt-4 max-w-xl font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="security-heading">A more organised and controlled visitor process.</h2>
-                <p className="mt-6 max-w-xl text-base leading-8 text-teal-100/75 sm:text-lg" data-testid="security-copy">Digi-Gate is designed to help organisations bring structure, visibility and control to the way they manage visitor activity.</p>
-                <Button onClick={() => navigate("/register")} variant="outline" className="mt-9 h-12 rounded-full border-[#F3E8BC]/30 bg-white/5 px-7 font-bold text-white hover:bg-white/10 hover:text-white cursor-pointer" data-testid="security-cta">
-                  Register Your Workplace<ArrowRight className="ml-2 size-4 text-[#F3E8BC]" />
+                <h2 className="mt-2 font-heading text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight text-white" data-testid="security-heading">
+                  A more organised and controlled visitor process.
+                </h2>
+                <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-teal-100/75" data-testid="security-copy">
+                  Digi-Gate brings enterprise structure, TLS 1.3 encryption, and complete access visibility to your workplace.
+                </p>
+                <Button onClick={() => navigate("/register")} variant="outline" className="mt-5 h-10 rounded-full border-[#F3E8BC]/30 bg-white/5 px-5 font-bold text-white text-xs hover:bg-white/10 hover:text-white cursor-pointer" data-testid="security-cta">
+                  Register Your Workplace<ArrowRight className="ml-2 size-3.5 text-[#F3E8BC]" />
                 </Button>
               </Reveal>
-              <Reveal delay={0.1}>
-                <div className="grid gap-3 sm:grid-cols-2" data-testid="security-points-grid">
+
+              <Reveal delay={0.1} className="flex-1 max-w-xl">
+                <div className="space-y-3.5 border-t lg:border-t-0 lg:border-l border-white/15 pt-4 lg:pt-0 lg:pl-8">
                   {[
-                    ["Organised visitor information", FileCheck2],
-                    ["A controlled digital process", LockKeyhole],
-                    ["Clearer visitor activity", Eye],
-                    ["Better host awareness", Bell],
-                    ["Organisation-level oversight", Building2],
-                  ].map(([title, Icon], index) => {
-                    const SecurityIcon = Icon as IconComponent;
-                    return (
-                      <div className={`flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-md ${index === 4 ? "sm:col-span-2" : ""}`} key={title as string} data-testid={`security-point-${(title as string).toLowerCase().replaceAll(" ", "-")}`}>
-                        <span className="flex size-10 items-center justify-center rounded-xl bg-[#05706f]/50 text-[#F3E8BC]"><SecurityIcon className="size-5" /></span>
-                        <span className="text-sm font-semibold text-white/90">{title as string}</span>
-                      </div>
-                    );
-                  })}
+                    "TLS 1.3 encrypted data transmission & AES-256 storage",
+                    "Automated GDPR-compliant visitor log purge schedules",
+                    "Real-time SMS / WhatsApp OTP visitor authentication",
+                    "Live on-site occupancy rosters for building safety drills",
+                    "Tamper-resistant digital gate pass credentials",
+                  ].map((point) => (
+                    <div key={point} className="flex items-center gap-3 text-xs sm:text-sm font-medium text-teal-50">
+                      <span className="flex size-5 items-center justify-center rounded-full bg-emerald-400/20 text-emerald-300 shrink-0">
+                        <Check className="size-3 stroke-[3]" />
+                      </span>
+                      <span>{point}</span>
+                    </div>
+                  ))}
                 </div>
               </Reveal>
             </div>
           </div>
         </section>
 
-        <section className="bg-[#F4F7F6] py-24 lg:py-32" data-testid="comparison-section">
+        <section className="bg-[#F4F7F6] py-8 sm:py-12" data-testid="comparison-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="Make the shift" title="From visitor register to visitor experience." copy="A professional arrival starts with replacing the friction of yesterday with the clarity of today." />
             </Reveal>
-            <div className="mt-14 grid gap-5 lg:grid-cols-2" data-testid="comparison-grid">
-              <Reveal>
-                <div className="rounded-3xl border border-slate-200 bg-white p-7 sm:p-10" data-testid="traditional-comparison-card">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading text-2xl font-bold tracking-[-0.04em] text-[#4a5d5c]">Traditional</h3>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-[#4a5d5c]">Manual approach</span>
-                  </div>
-                  <div className="mt-8 space-y-4">
-                    {["Paper-based records", "Manual processes", "Scattered information", "Limited visibility", "Time-consuming reception", "Less professional experience"].map((item) => (
-                      <div className="flex items-center gap-3 text-sm text-[#4a5d5c]" key={item}>
-                        <span className="flex size-5 items-center justify-center rounded-full bg-slate-100 text-slate-400"><X className="size-3" /></span>
-                        {item}
-                      </div>
-                    ))}
-                  </div>
+
+            {/* Open Comparative Breakdown (No Double Box Cards) */}
+            <div className="mt-8 flex flex-col md:flex-row items-stretch justify-between gap-8 md:gap-12 border-t border-slate-200 pt-8" data-testid="comparison-grid">
+              {/* Left: Traditional */}
+              <div className="flex-1 space-y-3" data-testid="traditional-comparison-card">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full">
+                    The Old Way
+                  </span>
+                  <h3 className="font-heading text-lg font-bold text-[#172525]">Traditional Paper Routines</h3>
                 </div>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <div className="relative overflow-hidden rounded-3xl bg-[#035352] p-7 text-white shadow-xl shadow-[#035352]/20 sm:p-10" data-testid="digigate-comparison-card">
-                  <div className="absolute -right-20 -top-20 size-56 rounded-full bg-[#F3E8BC]/15 blur-2xl" />
-                  <div className="relative flex items-center justify-between">
-                    <h3 className="font-heading text-2xl font-bold tracking-[-0.04em]">Digi-Gate</h3>
-                    <span className="rounded-full bg-[#F3E8BC]/15 px-3 py-1 font-mono text-[9px] uppercase tracking-widest text-[#F3E8BC]">Digital approach</span>
-                  </div>
-                  <div className="relative mt-8 space-y-4">
-                    {["Organised digital information", "More efficient visitor handling", "Better visibility", "Better host awareness", "Professional experience", "Built for organisations"].map((item) => (
-                      <div className="flex items-center gap-3 text-sm text-teal-50/95" key={item}>
-                        <span className="flex size-5 items-center justify-center rounded-full bg-emerald-400/20 text-[#10B981]"><Check className="size-3" /></span>
-                        {item}
-                      </div>
-                    ))}
-                  </div>
+                <div className="space-y-2.5 pt-2">
+                  {["Paper-based registers exposed to all guests", "Manual telephone calls & reception bottlenecks", "Scattered visitor logs with zero real-time visibility", "Slow entrance lines and delayed meeting starts"].map((item) => (
+                    <div className="flex items-center gap-2.5 text-xs sm:text-sm text-[#4a5d5c]" key={item}>
+                      <span className="flex size-4 items-center justify-center rounded-full bg-rose-100 text-rose-600 shrink-0"><X className="size-2.5 stroke-[3]" /></span>
+                      {item}
+                    </div>
+                  ))}
                 </div>
-              </Reveal>
+              </div>
+
+              {/* Vertical Divider Line */}
+              <div className="hidden md:block w-px bg-slate-200" />
+
+              {/* Right: Digi-Gate */}
+              <div className="flex-1 space-y-3" data-testid="digigate-comparison-card">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#05706f] bg-[#e6f0f0] px-2.5 py-0.5 rounded-full">
+                    The Digi-Gate Way
+                  </span>
+                  <h3 className="font-heading text-lg font-bold text-[#035352]">Modern Contactless Arrival</h3>
+                </div>
+                <div className="space-y-2.5 pt-2">
+                  {["18-second contactless smartphone check-in", "Sub-second WhatsApp & SMS host notifications", "Live digital occupancy roster for total workplace clarity", "Encrypted digital pass ready for turnstile access"].map((item) => (
+                    <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-[#172525]" key={item}>
+                      <span className="flex size-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 shrink-0"><Check className="size-2.5 stroke-[3]" /></span>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="bg-[#e6f0f0]/60 py-24 lg:py-32" data-testid="final-cta-section">
-          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <Reveal>
-              <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#022928] via-[#035352] to-[#011f1e] px-6 py-14 text-center shadow-2xl shadow-[#035352]/20 sm:px-12 sm:py-20">
-                <div className="absolute left-1/2 top-[-12rem] size-[30rem] -translate-x-1/2 rounded-full border border-[#F3E8BC]/10 bg-[#05706f]/20 blur-2xl pointer-events-none" />
-                <div className="relative">
-                  <h2 className="mx-auto font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="final-cta-heading">Ready to modernise your visitor experience?</h2>
-                  <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-teal-100/80 sm:text-lg" data-testid="final-cta-copy">See how Digi-Gate can help your organisation create a smarter, more professional way to manage visitors.</p>
-                  <div className="mt-9 flex flex-col sm:flex-row justify-center gap-4">
-                    <Button onClick={() => navigate("/register")} size="lg" className="h-16 rounded-full bg-white px-8 font-bold text-[#035352] hover:-translate-y-1 hover:bg-[#F3E8BC] flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer" data-testid="final-cta-scan-qr">
-                      <Building2 className="size-5 text-[#035352]" /> Register Your Organisation
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        <section id="faq" className="bg-white py-24 lg:py-32" data-testid="faq-section">
+        <section id="faq" className="scroll-mt-20 sm:scroll-mt-24 bg-white py-6 sm:py-8" data-testid="faq-section">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <Reveal>
               <SectionIntro eyebrow="Questions, answered" title="A clearer way to get started." copy="If you are thinking about the experience your organisation creates for visitors, you are already asking the right questions." />
             </Reveal>
-            <div className="mt-12 divide-y divide-slate-200 border-y border-slate-200" data-testid="faq-accordion">
+            <div className="mt-5 divide-y divide-slate-200 border-y border-slate-200" data-testid="faq-accordion">
               {faqs.map(([question, answer], index) => {
                 const isOpen = activeFaq === index;
                 return (
                   <Reveal key={question} delay={index * 0.05}>
                     <div data-testid={`faq-accordion-item-${index + 1}`}>
-                      <button className="flex w-full items-center justify-between gap-6 py-6 text-left cursor-pointer" onClick={() => setActiveFaq(isOpen ? null : index)} aria-expanded={isOpen} data-testid={`faq-question-${index + 1}`}>
-                        <span className="font-heading text-base font-bold tracking-[-0.02em] text-[#172525] sm:text-lg">{question}</span>
-                        <span className={`flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[#035352] transition-transform duration-300 ${isOpen ? "rotate-180 bg-[#e6f0f0]" : ""}`}>
-                          <ChevronDown className="size-4" />
+                      <button className="flex w-full items-center justify-between gap-4 py-3 sm:py-3.5 text-left cursor-pointer" onClick={() => setActiveFaq(isOpen ? null : index)} aria-expanded={isOpen} data-testid={`faq-question-${index + 1}`}>
+                        <span className="font-heading text-sm sm:text-base font-bold tracking-[-0.02em] text-[#172525]">{question}</span>
+                        <span className={`flex size-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[#035352] transition-transform duration-300 ${isOpen ? "rotate-180 bg-[#e6f0f0]" : ""}`}>
+                          <ChevronDown className="size-3" />
                         </span>
                       </button>
                       <AnimatePresence initial={false}>
                         {isOpen && (
                           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-                            <p className="max-w-3xl pb-6 pr-10 text-sm leading-7 text-[#4a5d5c]" data-testid={`faq-answer-${index + 1}`}>{answer}</p>
+                            <p className="max-w-3xl pb-3.5 pr-6 text-xs sm:text-sm leading-6 text-[#4a5d5c]" data-testid={`faq-answer-${index + 1}`}>{answer}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -859,35 +964,35 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="register-business" className="bg-[#F4F7F6] py-20" data-testid="register-business-section">
-          <div id="contact" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-testid="contact-section">
+        <section id="register-business" className="scroll-mt-20 sm:scroll-mt-24 bg-[#F4F7F6] py-6 sm:py-8" data-testid="register-business-section">
+          <div id="contact" className="scroll-mt-20 sm:scroll-mt-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" data-testid="contact-section">
             <Reveal>
-              <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#022928] via-[#035352] to-[#011f1e] p-8 sm:p-14 text-white shadow-2xl shadow-[#035352]/20 border border-white/10">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#022928] via-[#035352] to-[#011f1e] p-6 sm:p-8 text-white shadow-xl shadow-[#035352]/20 border border-white/10">
                 <div className="absolute -right-20 -top-20 size-80 rounded-full bg-[#05706f]/30 blur-3xl pointer-events-none" />
                 <div className="absolute -left-20 -bottom-20 size-80 rounded-full bg-[#F3E8BC]/10 blur-3xl pointer-events-none" />
 
-                <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-2xl">
-                    <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.2] sm:leading-[1.18] tracking-tight text-white" data-testid="register-section-heading">
+                    <h2 className="font-heading text-2xl sm:text-3xl font-extrabold leading-[1.2] tracking-tight text-white" data-testid="register-section-heading">
                       Want to use Digi-Gate for your organisation?
                     </h2>
-                    <p className="mt-4 text-base sm:text-lg leading-relaxed text-teal-100/85" data-testid="register-section-copy">
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-teal-100/85" data-testid="register-section-copy">
                       Register your organisation details today to modernise your entrance, automate visitor passes, and gain complete workplace oversight.
                     </p>
-                    <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-teal-100/70">
-                      <span className="flex items-center gap-2 font-medium"><ShieldCheck className="size-4 text-[#F3E8BC]" /> Zero hardware lock-in</span>
-                      <span className="flex items-center gap-2 font-medium"><Sparkles className="size-4 text-[#F3E8BC]" /> 5-minute fast setup</span>
-                      <span className="flex items-center gap-2 font-medium"><Zap className="size-4 text-[#F3E8BC]" /> Instant host notifications</span>
+                    <div className="mt-3.5 flex flex-wrap items-center gap-4 text-xs text-teal-100/70">
+                      <span className="flex items-center gap-1.5 font-medium"><ShieldCheck className="size-3.5 text-[#F3E8BC]" /> Zero hardware lock-in</span>
+                      <span className="flex items-center gap-1.5 font-medium"><Sparkles className="size-3.5 text-[#F3E8BC]" /> 5-minute fast setup</span>
+                      <span className="flex items-center gap-1.5 font-medium"><Zap className="size-3.5 text-[#F3E8BC]" /> Instant host notifications</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-start lg:items-center gap-4 shrink-0">
                     <Button
                       onClick={() => navigate("/register")}
-                      className="h-12 sm:h-14 rounded-full bg-[#F3E8BC] hover:bg-[#e8da9d] px-8 text-sm sm:text-base font-bold text-[#035352] shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 cursor-pointer shrink-0"
+                      className="h-10 sm:h-11 rounded-full bg-[#F3E8BC] hover:bg-[#e8da9d] px-6 text-xs sm:text-sm font-bold text-[#035352] shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
                       data-testid="register-section-cta"
                     >
-                      <Building2 className="size-5 text-[#035352]" />
+                      <Building2 className="size-4 text-[#035352]" />
                       <span>Register Your Organisation</span>
                     </Button>
                   </div>
@@ -896,54 +1001,7 @@ export default function Home() {
             </Reveal>
           </div>
         </section>
-      </main>
-
-      <footer className="bg-[#011f1e] py-14 text-white" data-testid="footer">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
-            <div>
-              <LogoMark light testId="brand-logo-footer" />
-              <p className="mt-5 max-w-xs text-sm leading-6 text-teal-100/65" data-testid="footer-tagline">Smart visitor management for modern organisations.</p>
-              <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.18em] text-[#F3E8BC]" data-testid="footer-positioning">A better welcome, every time.</p>
-            </div>
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#F3E8BC]">Explore</p>
-              <div className="mt-5 flex flex-col gap-3 text-sm text-teal-100/70">
-                {[
-                  ["Product", "#product-preview"],
-                  ["Benefits", "#benefits"],
-                  ["Solutions", "#solutions"],
-                  ["Security", "#security"],
-                ].map(([label, href]) => (
-                  <a key={label} href={href} className="transition-colors hover:text-white" data-testid={`footer-link-${label.toLowerCase()}`}>{label}</a>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#F3E8BC]">Company</p>
-              <div className="mt-5 flex flex-col gap-3 text-sm text-teal-100/70">
-                <a href="#register-business" onClick={(e) => { e.preventDefault(); navigate("/register"); }} className="transition-colors hover:text-white font-semibold text-white" data-testid="footer-link-register">Register Business</a>
-                <a href="#faq" className="transition-colors hover:text-white" data-testid="footer-link-faq">FAQ</a>
-                <a href="#contact" className="transition-colors hover:text-white" data-testid="footer-link-contact">Contact</a>
-                <a href="#security" className="transition-colors hover:text-white" data-testid="footer-link-trust">Trust & control</a>
-              </div>
-            </div>
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#F3E8BC]">Ready when you are</p>
-              <p className="mt-4 text-xs text-teal-100/65">Modernize your entrance today with Digi-Gate.</p>
-              <div className="mt-4 flex flex-col gap-2">
-                <Button onClick={() => navigate("/register")} className="h-10 rounded-full bg-white text-[#035352] hover:bg-[#F3E8BC] text-xs font-bold px-5 flex items-center gap-2 transition-colors cursor-pointer">
-                  <Building2 className="size-4 text-[#05706f]" /> Business Registration
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-teal-100/50">
-            <p>&copy; {new Date().getFullYear()} Digi-Gate. All rights reserved.</p>
-            <p className="mt-2 sm:mt-0 font-mono text-[10px] tracking-widest uppercase">Smart Visitor Management System</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </MarketingLayout>
   );
 }
