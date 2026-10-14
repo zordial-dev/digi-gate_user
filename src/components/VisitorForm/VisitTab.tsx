@@ -53,7 +53,8 @@ export default function VisitTab() {
     }
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   return (
     <div className="space-y-4">
@@ -91,20 +92,10 @@ export default function VisitTab() {
             >
               <option value="">Choose a host from staff directory</option>
               {hosts.map((h) => {
-                const dates = Array.isArray(h.unavailable_dates) ? h.unavailable_dates : [];
-                const isDateOff = dates.includes(todayStr) || h.is_date_unavailable === true;
-                const toggleAvailable = h.is_available_toggle ?? h.is_available ?? true;
-                
-                let statusLabel = '🟢 Available';
-                if (!toggleAvailable) {
-                  statusLabel = '🔴 Unavailable';
-                } else if (isDateOff) {
-                  statusLabel = '🔴 Unavailable (On Leave Today)';
-                }
-
+                const label = h.status_label || (h.is_available ? '🟢 Available' : '🔴 Unavailable');
                 return (
                   <option key={h.id} value={h.id}>
-                    {h.full_name} {h.designation ? `- ${h.designation}` : ''} ({statusLabel})
+                    {h.full_name} {h.designation ? `- ${h.designation}` : ''} ({label})
                   </option>
                 );
               })}

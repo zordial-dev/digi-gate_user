@@ -20,13 +20,17 @@ interface VisitorState {
   selfiePreview: string | null;
   isReturning: boolean;
   visitorId: number | null;
-  step: 'mobile' | 'otp' | 'form';
+  step: 'mobile' | 'otp' | 'invitation' | 'form';
   tab: number;
   showConfirm: boolean;
   confirmData: any;
   loading: boolean;
   errors: Record<string, string>;
   msg: { type: 'success' | 'error'; text: string } | null;
+  isInvited: boolean;
+  invitationCode: string;
+  invitationData: any | null;
+  invitationNotes: string;
 }
 
 const initialState: VisitorState = {
@@ -56,6 +60,10 @@ const initialState: VisitorState = {
   loading: false,
   errors: {},
   msg: null,
+  isInvited: false,
+  invitationCode: '',
+  invitationData: null,
+  invitationNotes: '',
 };
 
 const slice = createSlice({
@@ -89,7 +97,7 @@ const slice = createSlice({
     setVisitorId: (state, action: PayloadAction<number | null>) => {
       state.visitorId = action.payload;
     },
-    setStep: (state, action: PayloadAction<'mobile' | 'otp' | 'form'>) => {
+    setStep: (state, action: PayloadAction<'mobile' | 'otp' | 'invitation' | 'form'>) => {
       state.step = action.payload;
     },
     setTab: (state, action: PayloadAction<number>) => {
@@ -112,6 +120,18 @@ const slice = createSlice({
     },
     clearMsg: (state) => {
       state.msg = null;
+    },
+    setIsInvited: (state, action: PayloadAction<boolean>) => {
+      state.isInvited = action.payload;
+    },
+    setInvitationCode: (state, action: PayloadAction<string>) => {
+      state.invitationCode = action.payload;
+    },
+    setInvitationData: (state, action: PayloadAction<any>) => {
+      state.invitationData = action.payload;
+    },
+    setInvitationNotes: (state, action: PayloadAction<string>) => {
+      state.invitationNotes = action.payload;
     },
     reset: () => initialState,
   },

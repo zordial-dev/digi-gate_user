@@ -61,6 +61,44 @@ export const visitorApi = {
     apiClient.post<{ success: boolean; data: Visitor; error?: string }>('/visitors', data),
 };
 
+export const invitationApi = {
+  checkMobile: (mobile: string, organisationId?: number) =>
+    apiClient.get<{
+      success: boolean;
+      hasActiveInvitation: boolean;
+      count?: number;
+      invitationHint?: string;
+      hostName?: string;
+      error?: string;
+    }>(`/invitations/check-mobile/${mobile}`, {
+      params: organisationId ? { organisation_id: organisationId } : {}
+    }),
+
+  validateCode: (data: { mobile_number: string; invitation_code: string; organisation_id?: number }) =>
+    apiClient.post<{
+      success: boolean;
+      message?: string;
+      data: {
+        id: number;
+        invitation_code: string;
+        visitor_name: string;
+        mobile_number: string;
+        purpose_of_visit: string;
+        host_id: number;
+        host_name: string;
+        host_department: string;
+        host_designation: string;
+        host_profile_pic: string | null;
+        additional_notes: string;
+        valid_date: string;
+        valid_until: string;
+        organisation_id: number;
+        visitor_id: number | null;
+      };
+      error?: string;
+    }>('/invitations/validate-code', data),
+};
+
 export const visitApi = {
   create: (formData: FormData) =>
     apiClient.post<{

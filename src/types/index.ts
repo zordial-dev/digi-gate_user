@@ -1,3 +1,20 @@
+export interface Holiday {
+  date: string;
+  title: string;
+}
+
+export interface OrgStatusResult {
+  is_open: boolean;
+  status_type: 'open' | 'holiday' | 'off_day' | 'closed_hours';
+  status_title: string;
+  status_message: string;
+  holiday_title?: string;
+  holiday_date?: string;
+  opening_time?: string;
+  closing_time?: string;
+  working_days?: string[];
+}
+
 export interface Organisation {
   id: number;
   name: string;
@@ -18,6 +35,11 @@ export interface Organisation {
   people: Host[];
   created_at: string;
   updated_at: string;
+  working_days?: string[];
+  opening_time?: string;
+  closing_time?: string;
+  holidays?: Holiday[];
+  org_status?: OrgStatusResult;
 }
 
 export interface Host {
@@ -27,6 +49,18 @@ export interface Host {
   email: string;
   profile_pic: string;
   is_available: boolean;
+  unavailable_dates?: string[];
+  available_from?: string;
+  available_to?: string;
+  lunch_from?: string;
+  lunch_to?: string;
+  working_days?: string[];
+  date_overrides?: Record<string, any>;
+  is_lunch?: boolean;
+  is_on_leave?: boolean;
+  is_off_duty?: boolean;
+  availability_status?: string;
+  status_label?: string;
 }
 
 export interface VisitorFormData {

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
-import { visitorApi } from '@/api/services';
-import { Phone, ArrowRight, ShieldCheck } from 'lucide-react';
+import { visitorApi, invitationApi } from '@/api/services';
+import { Phone, ArrowRight, ShieldCheck, Ticket } from 'lucide-react';
 
 export default function MobileStep() {
   const dispatch = useDispatch();
@@ -21,7 +21,22 @@ export default function MobileStep() {
     setLoading(true);
     dispatch(actions.setMsg(null));
     try {
-      // 1. Send real SMS OTP first
+      const orgIdToUse = state.org?.id || 1;
+
+      // 1. Check for ACTIVE invitation for this mobile number (Phase 2 check)
+      try {
+        const invRes = await invitationApi.checkMobile(state.mobile, orgIdToUse);
+        if (invRes.data.success && invRes.data.hasActiveInvitation) {
+          dispatch(actions.setStep('invitation'));
+          setLoading(false);
+          return;
+        }
+      } catch (invErr) {
+        console.error('Active invitation check error:', invErr);
+      }
+
+      // 2. No Active Invitation -> Normal Visitor Flow
+      // Send real SMS OTP first
       const otpRes = await visitorApi.sendOtp(state.mobile);
       if (!otpRes.data.success) {
         dispatch(actions.setMsg({ type: 'error', text: otpRes.data.error || 'Failed to send OTP' }));
@@ -29,8 +44,7 @@ export default function MobileStep() {
         return;
       }
 
-      // 2. Check if returning visitor (pre-fill form data)
-      const orgIdToUse = state.org?.id || 1;
+      // Check if returning visitor (pre-fill form data)
       const res = await visitorApi.check(state.mobile, orgIdToUse);
       const result = res.data;
 
@@ -107,13 +121,30 @@ export default function MobileStep() {
         disabled={loading || !isValidMobile}
         className="w-full py-3.5 rounded-full font-bold text-white bg-[#035352] hover:bg-[#023e3d] shadow-md shadow-[#035352]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs uppercase tracking-wider cursor-pointer"
       >
-        <span>{loading ? 'Sending Verification Code...' : 'Send Verification OTP'}</span>
+        <span>{loading ? 'Verifying...' : 'Continue'}</span>
         <ArrowRight className="w-4 h-4" />
       </button>
 
-      <div className="pt-2 text-center text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
+      <div className="pt-2 border-t border-slate-100 text-center">
+        <button
+          type="button"
+          onClick={() => {
+            if (!isValidMobile) {
+              dispatch(actions.setMsg({ type: 'error', text: 'Please enter your 10-digit mobile number first' }));
+              return;
+            }
+            dispatch(actions.setStep('invitation'));
+          }}
+          className="text-xs font-bold text-[#035352] hover:underline cursor-pointer flex items-center justify-center gap-1.5 mx-auto"
+        >
+          <Ticket className="w-3.5 h-3.5" />
+          <span>Have an Invitation Code? Enter here</span>
+        </button>
+      </div>
+
+      <div className="pt-1 text-center text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1.5">
         <ShieldCheck className="w-4 h-4 text-[#035352]" />
-        <span>Secure OTP verification for visitor security</span>
+        <span>Secure visitor verification</span>
       </div>
     </div>
   );
