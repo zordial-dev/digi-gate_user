@@ -4,6 +4,8 @@ import type { RootState } from '@/store/store';
 import { actions } from '@/store/slices/visitorSlice';
 import MobileStep from '@/components/VisitorForm/MobileStep';
 import OtpStep from '@/components/VisitorForm/OtpStep';
+import InvitationStep from '@/components/VisitorForm/InvitationStep';
+import InvitedVisitorForm from '@/components/VisitorForm/InvitedVisitorForm';
 import ConfirmationScreen from '@/components/VisitorForm/ConfirmationScreen';
 import PersonalTab from '@/components/VisitorForm/PersonalTab';
 import VisitTab from '@/components/VisitorForm/VisitTab';
@@ -314,6 +316,100 @@ export default function VisitorFormPage() {
     );
   }
 
+  // 2b. Closed Organisation Screen (Holiday, Off-Day, or Outside Visiting Hours)
+  if (state.org && state.org.org_status && !state.org.org_status.is_open) {
+    const status = state.org.org_status;
+    const isHoliday = status.status_type === 'holiday';
+    const isOffDay = status.status_type === 'off_day';
+    const org = state.org;
+    const workingDaysStr = Array.isArray(org.working_days) && org.working_days.length > 0 
+      ? org.working_days.join(', ') 
+      : 'Mon, Tue, Wed, Thu, Fri, Sat';
+
+    return (
+      <div className="min-h-screen py-6 px-4 bg-[#F4F7F6] flex flex-col justify-between selection:bg-[#035352] selection:text-white">
+        <div className="max-w-lg mx-auto w-full space-y-5">
+          {/* Branding Header */}
+          <div className="text-center mb-6 space-y-2">
+            {org.logo_url && !logoError ? (
+              <img
+                src={org.logo_url}
+                alt={org.name}
+                className="h-14 mx-auto object-contain rounded-xl p-1 bg-white border border-slate-200 shadow-sm"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-2xl bg-[#035352] text-[#F3E8BC] flex items-center justify-center mx-auto shadow-md border border-[#035352]">
+                <Building2 className="w-6 h-6" />
+              </div>
+            )}
+
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-black text-[#172525] tracking-tight">
+                {org.name}
+              </h1>
+              <p className="text-xs sm:text-sm font-bold text-slate-500">
+                Gate Pass Registration
+              </p>
+            </div>
+          </div>
+
+          {/* Main Card */}
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-2xl shadow-[#035352]/10 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-1.5 pb-4 border-b border-slate-100">
+              <h2 className="text-lg font-bold text-[#172525]">
+                {isHoliday
+                  ? `Closed on behalf of ${status.holiday_title}`
+                  : isOffDay
+                  ? `Closed Today (${status.status_title.includes('Weekly Off') ? status.status_title : 'Weekly Off'})`
+                  : 'Visiting Hours Closed'}
+              </h2>
+              <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                {isHoliday
+                  ? `The premises are closed today for ${status.holiday_title}. Gate registrations are currently suspended.`
+                  : isOffDay
+                  ? 'The organisation is closed today. Gate passes can only be generated on regular working days.'
+                  : `Visiting hours are currently closed. Gate operating hours for today are ${status.opening_time} to ${status.closing_time}.`}
+              </p>
+            </div>
+
+            {/* Operating Details */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-xs py-1">
+                <span className="text-slate-500 font-semibold">Visiting Hours</span>
+                <span className="font-bold text-[#172525]">{status.opening_time || '09:00'} - {status.closing_time || '18:00'}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs py-1">
+                <span className="text-slate-500 font-semibold">Working Days</span>
+                <span className="font-bold text-[#172525] text-right">{workingDaysStr}</span>
+              </div>
+              {isHoliday && status.holiday_title && (
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-slate-500 font-semibold">Holiday</span>
+                  <span className="font-bold text-[#172525] text-right">{status.holiday_title}</span>
+                </div>
+              )}
+              {org.phone && (
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-slate-500 font-semibold">Reception Contact</span>
+                  <span className="font-bold text-[#035352]">{org.phone}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 text-center text-xs text-slate-400 font-medium">
+              Visitor check-in will resume during active operating hours.
+            </div>
+          </div>
+        </div>
+
+        <div className="py-3 text-center text-[11px] font-semibold text-slate-400">
+          Powered by DIGI-GATE Gate Pass System
+        </div>
+      </div>
+    );
+  }
+
   // 3. Branding subtitle logic (inlined to avoid flicker from inner-component remounting)
   let brandingSubtitle = '';
   let showWelcomeBack = false;
@@ -323,9 +419,13 @@ export default function VisitorFormPage() {
     brandingSubtitle = 'Enter your mobile number to check in';
   } else if (state.step === 'otp') {
     brandingSubtitle = `Enter 6-digit OTP code sent to +91 ${state.mobile}`;
+  } else if (state.step === 'invitation') {
+    brandingSubtitle = 'Enter invitation code for fast-track entry';
   } else if (state.step === 'form') {
-    brandingSubtitle = 'Complete your profile to generate gate pass';
-    showWelcomeBack = state.isReturning;
+    brandingSubtitle = state.isInvited
+      ? 'Confirm pre-approved details & take selfie'
+      : 'Complete your profile to generate gate pass';
+    showWelcomeBack = state.isReturning && !state.isInvited;
   }
 
   // 4. Main Visitor Check-In Form Screen
@@ -383,7 +483,11 @@ export default function VisitorFormPage() {
           <>
             {state.step === 'mobile' && <MobileStep />}
             {state.step === 'otp' && <OtpStep />}
+            {state.step === 'invitation' && <InvitationStep />}
             {state.step === 'form' && (
+              state.isInvited ? (
+                <InvitedVisitorForm />
+              ) : (
               <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl shadow-[#035352]/10 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
                 {/* 3-Step Navigation Header */}
                 <div className="flex border-b border-slate-100 bg-slate-50/80 p-1.5 gap-1">
@@ -449,6 +553,7 @@ export default function VisitorFormPage() {
                   </div>
                 </div>
               </div>
+              )
             )}
           </>
         )}

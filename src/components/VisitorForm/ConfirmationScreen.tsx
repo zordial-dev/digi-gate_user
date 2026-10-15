@@ -105,6 +105,13 @@ export default function ConfirmationScreen() {
             </span>
           </div>
         </div>
+
+        {state.isInvited && state.invitationCode && (
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-xs font-bold text-[#035352]">
+            <span>Fast-Track Invitation:</span>
+            <span className="font-mono bg-white px-2 py-0.5 rounded border border-teal-200">{state.invitationCode}</span>
+          </div>
+        )}
       </div>
 
       {/* Action Button */}
