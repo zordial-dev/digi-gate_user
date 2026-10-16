@@ -14,6 +14,7 @@ interface Host {
   is_available_toggle?: boolean;
   is_date_unavailable?: boolean;
   unavailable_dates?: string[];
+  status_label?: string;
 }
 
 export default function VisitTab() {
@@ -53,8 +54,7 @@ export default function VisitTab() {
     }
   };
 
-  const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
 
   return (
     <div className="space-y-4">
